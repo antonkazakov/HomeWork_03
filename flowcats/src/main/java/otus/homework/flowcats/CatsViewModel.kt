@@ -15,16 +15,14 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts()
-                    .flowOn(Dispatchers.Main)
                     .catch { ex ->
                        _catsFlow.value = Result.Error(ex.localizedMessage ?: "Unknown error")
                     }
+                    .flowOn(Dispatchers.Main)
                     .collect {
                     _catsFlow.value = Result.Success(it)
                 }
-            }
         }
     }
 }
