@@ -13,7 +13,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 
-
 @ExperimentalCoroutinesApi
 class SampleInteractorTest {
 
@@ -27,7 +26,7 @@ class SampleInteractorTest {
         val expected = listOf("35 won", "55 won", "25 won")
         val actual = dotsInteractor.task1().toList()
 
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
     }
 
     @Test
@@ -69,7 +68,7 @@ class SampleInteractorTest {
         )
         val actual = dotsInteractor.task2().toList()
 
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
     }
 
     @Test
@@ -121,7 +120,7 @@ class SampleInteractorTest {
             }
         }
 
-        assertThrows(SecurityException::class.java){
+        assertThrows(SecurityException::class.java) {
             runBlockingTest {
                 dotsInteractor.task4().toList()
             }

@@ -11,8 +11,15 @@ class CatsView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr), ICatsView {
 
+    private lateinit var factTextView: TextView
+
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        factTextView = findViewById(R.id.fact_textView)
+    }
+
     override fun populate(fact: Fact) {
-        findViewById<TextView>(R.id.fact_textView).text = fact.text
+        factTextView.text = fact.fact
     }
 }
 
