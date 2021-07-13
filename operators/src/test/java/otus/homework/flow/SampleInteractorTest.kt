@@ -1,5 +1,6 @@
 package otus.homework.flow
 
+import io.mockk.InternalPlatformDsl.toArray
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

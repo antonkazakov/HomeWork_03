@@ -18,7 +18,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { it * 5 }
+            .filter { it >= 20 }
+            .filter { it % 2 != 0 }
+            .take(3)
+            .transform { emit("$it won") }
     }
 
     /**
@@ -29,7 +34,25 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .transform {
+                when {
+                    it % 15 == 0 -> {
+                        emit("$it")
+                        emit("FizzBuzz")
+                    }
+                    it % 3 == 0 -> {
+                        emit("$it")
+                        emit("Fizz")
+
+                    }
+                    it % 5 == 0 -> {
+                        emit("$it")
+                        emit("Buzz")
+                    }
+                    else -> emit("$it")
+                }
+            }
     }
 
     /**
@@ -38,7 +61,8 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { s1, s2 -> Pair(s1, s2) }
     }
 
     /**
@@ -48,6 +72,8 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .catch { if (it is IllegalArgumentException) emit(-1) else throw it }
+            .onEach { sampleRepository.completed() }
     }
 }
