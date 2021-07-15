@@ -2,6 +2,7 @@ package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import java.lang.IllegalArgumentException
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -18,7 +19,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { it * 5 }
+            .filterNot { it <= 20 }
+            .filter { it % 2 != 0 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -29,7 +35,24 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .transform { value ->
+                when {
+                    (value % 15 == 0) -> {
+                        emit(value.toString())
+                        emit("FizzBuzz")
+                    }
+                    (value % 3 == 0) -> {
+                        emit(value.toString())
+                        emit("Fizz")
+                    }
+                    (value % 5 == 0) -> {
+                        emit(value.toString())
+                        emit("Buzz")
+                    }
+                    else -> emit(value.toString())
+                }
+            }
     }
 
     /**
@@ -38,7 +61,10 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { first, second ->
+                Pair(first, second)
+            }
     }
 
     /**
@@ -48,6 +74,14 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .catch { t ->
+                if (t is IllegalArgumentException) {
+                    emit(-1)
+                } else {
+                    throw t
+                }
+            }
+            .onCompletion { sampleRepository.completed() }
     }
 }
