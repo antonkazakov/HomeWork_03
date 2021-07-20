@@ -17,9 +17,15 @@ class SampleInteractor(
      * 5) берет 3 первых числа
      * 6) возвращает результат
      */
-    fun task1(): Flow<String> {
-        return flowOf()
-    }
+    fun task1(): Flow<String> =
+        sampleRepository.produceNumbers()
+            .map { it * 5 }
+            .filterNot { it <= 20 }
+            .filterNot { it % 2 == 0 }
+            .map { "$it won"}
+            .take(3)
+
+
 
     /**
      * Классическая задача FizzBuzz с небольшим изменением.
@@ -28,9 +34,16 @@ class SampleInteractor(
      * Если входное число делится на 15 - эмитим само число и после него эмитим строку FizzBuzz
      * Если число не делится на 3,5,15 - эмитим само число
      */
-    fun task2(): Flow<String> {
-        return flowOf()
-    }
+    fun task2(): Flow<String> =
+        sampleRepository.produceNumbers().transform {
+            emit(it.toString())
+            when {
+                it % 15 == 0 -> emit( "FizzBuzz")
+                it % 5 == 0 -> emit( "Buzz")
+                it % 3 == 0 -> emit( "Fizz")
+            }
+        }
+
 
     /**
      * Реализуйте функцию task3, которая объединяет эмиты из двух flow и возвращает кортеж Pair<String,String>(f1,f2),
