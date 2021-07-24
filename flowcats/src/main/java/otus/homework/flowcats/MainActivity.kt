@@ -1,9 +1,11 @@
 package otus.homework.flowcats
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.lifecycle.Observer
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,8 +17,10 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
 
-        catsViewModel.bookLiveData.observe(this, Observer {
-            view.populate(it)
-        })
+        lifecycleScope.launch {
+            catsViewModel.stateFlow.collect { book ->
+                book?.let { view.populate(it) }
+            }
+        }
     }
 }
