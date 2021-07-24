@@ -15,9 +15,9 @@ class CatsViewModel(
     val bookLiveData: LiveData<Book> = _bookLiveData
 
     init {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect {
+        viewModelScope.launch(Dispatchers.IO) {
+            catsRepository.listenForCatFacts().collect {
+                withContext(Dispatchers.Main) {
                     _bookLiveData.value = it
                 }
             }
