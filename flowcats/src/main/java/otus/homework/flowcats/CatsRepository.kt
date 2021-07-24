@@ -4,13 +4,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 
 class CatsRepository(
-    private val catsService: CatsService,
+    private val bookService: BookService,
     private val refreshIntervalMs: Long = 5000
 ) {
 
     fun listenForCatFacts() = flow {
         while (true) {
-            val latestNews = catsService.getCatFact()
+            val latestNews = bookService.getBook()
             emit(latestNews)
             delay(refreshIntervalMs)
         }
