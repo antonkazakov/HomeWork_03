@@ -1,6 +1,7 @@
 package otus.homework.flowcats
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -18,8 +19,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         lifecycleScope.launch {
-            catsViewModel.stateFlow.collect { book ->
-                book?.let { view.populate(it) }
+            catsViewModel.stateFlow.collect { result ->
+                when (result) {
+                    is Result.Success -> result.book?.let { view.populate(it) }
+                    is Result.Error -> {
+                        val message = result.message ?: result.messageRes?.let { str -> getString(str) }
+                        Toast.makeText(this@MainActivity, message, Toast.LENGTH_LONG).show()
+                    }
+                }
             }
         }
     }

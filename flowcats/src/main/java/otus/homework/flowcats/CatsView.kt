@@ -19,5 +19,5 @@ class CatsView @JvmOverloads constructor(
 
 interface ICatsView {
 
-    fun populate(fact: Book)
+    fun populate(book: Book)
 }
