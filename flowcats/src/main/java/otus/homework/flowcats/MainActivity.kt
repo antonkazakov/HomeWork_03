@@ -14,7 +14,9 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
 
-        catsViewModel.catsLiveData.observe(this){
+        catsViewModel.catsStateFlow.
+
+        catsViewModel.catsStateFlow.observe(this){
             view.populate(it)
         }
     }
