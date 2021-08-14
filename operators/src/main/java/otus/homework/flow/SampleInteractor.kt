@@ -2,6 +2,7 @@ package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import java.lang.IllegalArgumentException
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -48,7 +49,7 @@ class SampleInteractor(
                     emit(it.toString())
                     emit("Fizz")
                 }
-                (it % 3 !=0 && it % 5 !=0 && it % 15 !=0) -> {
+                (it % 3 != 0 && it % 5 != 0 && it % 15 != 0) -> {
                     emit(it.toString())
                 }
 
@@ -66,7 +67,9 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        val flowColors = sampleRepository.produceColors().transform { emit(it) }
+        val flowForms = sampleRepository.produceForms().transform { emit(it) }
+        return flowColors.zip(flowForms) { f, s -> Pair(f, s) }
     }
 
     /**
@@ -76,6 +79,12 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+                .catch {
+                    if (it is IllegalArgumentException) emit(-1) else if (it !is IllegalArgumentException) {
+                        throw SecurityException("Security breach")
+                    }
+                }
+                .onCompletion { sampleRepository.completed() }
     }
 }
