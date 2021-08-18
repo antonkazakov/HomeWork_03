@@ -18,7 +18,7 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf(7, 12, 4, 8, 11, 5, 7, 16, 99, 1)
+        return sampleRepository.produceNumbers()
             .map { it * 5 } // по условию задачи тут должно быть - map { it.toDouble().pow(5).toInt() }
             .filter { it > 20 }
             .filter { it % 2 != 0 }
@@ -34,24 +34,13 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return (1..21).asFlow()
+        return sampleRepository.produceNumbers()
             .transform {
+                emit(it.toString())
                 when {
-                    it % 15 == 0 -> {
-                        emit(it.toString())
-                        emit("FizzBuzz")
-                    }
-                    it % 5 == 0 -> {
-                        emit(it.toString())
-                        emit("Buzz")
-                    }
-                    it % 3 == 0 -> {
-                        emit(it.toString())
-                        emit("Fizz")
-                    }
-                    (it % 3 != 0 && it % 5 != 0 && it % 15 != 0) -> {
-                        emit(it.toString())
-                    }
+                    it % 15 == 0 -> emit("FizzBuzz")
+                    it % 5 == 0 -> emit("Buzz")
+                    it % 3 == 0 -> emit("Fizz")
                 }
             }
     }
@@ -62,9 +51,7 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        val flow1 = flowOf("Red", "Green", "Blue", "Black", "White")
-        val flow2 = flowOf("Circle", "Square", "Triangle")
-        return flow1.zip(flow2){f1, f2 -> Pair(f1, f2)}
+        return sampleRepository.produceColors().zip(sampleRepository.produceForms()){f1, f2 -> Pair(f1, f2)}
     }
 
     /**
@@ -74,24 +61,14 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return (1..10).asFlow()
+        return sampleRepository.produceNumbers()
             .transform {
-                if (it == 5) {
-                    throw IllegalArgumentException("Failed")
-                    // throw SecurityException("Security breach") - для теста `test task4 negative`
-                } else {
-                    emit(it)
-                }
+                emit(it)
             }.catch {
+                sampleRepository.completed()
                 when (it) {
-                    is IllegalArgumentException -> {
-                        sampleRepository.completed()
-                        emit(-1)
-                    }
-                    !is IllegalArgumentException -> {
-                        sampleRepository.completed()
-                        throw it
-                    }
+                    is IllegalArgumentException -> emit(-1)
+                    !is IllegalArgumentException -> throw it
                 }
             }
     }
