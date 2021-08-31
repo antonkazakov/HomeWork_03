@@ -1,5 +1,6 @@
-package otus.homework.flowcats
+package otus.homework.flowcats.utils
 
+import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 
