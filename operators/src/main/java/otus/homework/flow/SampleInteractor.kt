@@ -64,11 +64,12 @@ class SampleInteractor(
         return sampleRepository.produceNumbers()
             .transform {
                 emit(it)
-            }.catch {
+            }.onCompletion {
                 sampleRepository.completed()
+            }.catch {
                 when (it) {
                     is IllegalArgumentException -> emit(-1)
-                    !is IllegalArgumentException -> throw it
+                    else -> throw it
                 }
             }
     }
