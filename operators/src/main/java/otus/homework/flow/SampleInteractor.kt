@@ -36,26 +36,12 @@ class SampleInteractor(
      */
     fun task2(): Flow<String> {
         return sampleRepository.produceNumbers().transform {
+            emit(it.toString())
             when {
-                it % 15 == 0 -> {
-                    emit(it.toString())
-                    emit("FizzBuzz")
-                }
-                it % 5 == 0 -> {
-                    emit(it.toString())
-                    emit("Buzz")
-                }
-                it % 3 == 0 -> {
-                    emit(it.toString())
-                    emit("Fizz")
-                }
-                (it % 3 != 0 && it % 5 != 0 && it % 15 != 0) -> {
-                    emit(it.toString())
-                }
-
+                it % 15 == 0 -> emit("FizzBuzz")
+                it % 5 == 0 -> emit("Buzz")
+                it % 3 == 0 -> emit("Fizz")
             }
-
-
         }
 
 
@@ -67,9 +53,7 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        val flowColors = sampleRepository.produceColors().transform { emit(it) }
-        val flowForms = sampleRepository.produceForms().transform { emit(it) }
-        return flowColors.zip(flowForms) { f, s -> Pair(f, s) }
+        return sampleRepository.produceColors().zip(sampleRepository.produceForms()) { f, s -> Pair(f, s)}
     }
 
     /**
@@ -81,7 +65,7 @@ class SampleInteractor(
     fun task4(): Flow<Int> {
         return sampleRepository.produceNumbers()
                 .catch {
-                    if (it is IllegalArgumentException) emit(-1) else if (it !is IllegalArgumentException) {
+                    if (it is IllegalArgumentException) emit(-1) else {
                         throw SecurityException("Security breach")
                     }
                 }
