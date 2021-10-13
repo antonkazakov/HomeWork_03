@@ -18,7 +18,18 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers().map {
+            it * 5
+        }
+            .filter {
+                it > 20
+            }
+            .filterNot {
+                it % 2 == 0
+            }
+            .map {
+                "$it won"
+            }.take(3)
     }
 
     /**
@@ -29,7 +40,26 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .transform {
+                when {
+                    it % 15 == 0 -> {
+                        emit("$it")
+                        emit("FizzBuzz")
+                    }
+                    it % 5 == 0 -> {
+                        emit("$it")
+                        emit("Buzz")
+                    }
+                    it % 3 == 0 -> {
+                        emit("$it")
+                        emit("Fizz")
+                    }
+                    else -> {
+                        emit("$it")
+                    }
+                }
+            }
     }
 
     /**
@@ -38,7 +68,10 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { color, form ->
+                color to form
+            }
     }
 
     /**
@@ -48,6 +81,38 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .onCompletion {
+                sampleRepository.completed()
+            }
+            .catch { e ->
+                if (e is IllegalArgumentException) {
+                    emit(-1)
+                } else {
+                    throw e
+                }
+            }
+
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
