@@ -1,4 +1,4 @@
-package otus.homework.flowcats
+package otus.homework.flowcats.api
 
 import com.google.gson.annotations.SerializedName
 

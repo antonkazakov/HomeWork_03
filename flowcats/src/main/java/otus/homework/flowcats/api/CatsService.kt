@@ -1,4 +1,4 @@
-package otus.homework.flowcats
+package otus.homework.flowcats.api
 
 import retrofit2.http.GET
 
