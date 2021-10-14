@@ -79,18 +79,11 @@ class SampleInteractor(
      */
     fun task4(): Flow<Int> {
         return sampleRepository.produceNumbers()
-            .transform {
-                if (it == 5) {
-                    throw IllegalArgumentException("Failed")
-                } else {
-                    emit(it)
-                }
-            }
-            .catch {
-                if (it is IllegalArgumentException)
+            .catch { ex ->
+                if (ex is IllegalArgumentException)
                     emit(-1)
                 else
-                    throw it
+                    throw ex
             }
             .onCompletion { sampleRepository.completed() }
     }
