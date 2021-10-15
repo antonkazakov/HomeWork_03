@@ -1,5 +1,6 @@
 package otus.homework.flow
 
+import kotlin.math.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
@@ -18,7 +19,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { it.toFloat().pow(5).toLong() }
+            .filterNot { it <= 20L }
+            .filterNot { it % 2L == 0L }
+            .map { "won$it" }
+            .take(3)
     }
 
     /**
@@ -29,7 +35,29 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository
+            .produceNumbers()
+            .transform {
+                var canBeDivided = false
+                if (it % 3 == 0) {
+                    emit(it.toString())
+                    emit("Fizz")
+                    canBeDivided = true
+                }
+                if (it % 5 == 0) {
+                    emit(it.toString())
+                    emit("Buzz")
+                    canBeDivided = true
+                }
+                if (it % 15 == 0) {
+                    emit(it.toString())
+                    emit("FizzBuzz")
+                    canBeDivided = true
+                }
+                if (!canBeDivided) {
+                    emit(it.toString())
+                }
+            }
     }
 
     /**
@@ -38,7 +66,10 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .zip(sampleRepository.produceColors()) { first, second ->
+                Pair(first.toString(), second)
+            }
     }
 
     /**
@@ -48,6 +79,16 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .catch { cause: Throwable ->
+                if (cause is IllegalArgumentException) {
+                    emit(-1)
+                } else {
+                    throw cause
+                }
+            }
+            .onCompletion {
+                sampleRepository.completed()
+            }
     }
 }
