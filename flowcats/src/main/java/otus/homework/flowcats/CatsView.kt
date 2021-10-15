@@ -11,12 +11,16 @@ class CatsView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr), ICatsView {
 
-    override fun populate(fact: Fact) {
-        findViewById<TextView>(R.id.fact_textView).text = fact.text
+    override fun populate(result: Result<Fact>) {
+        findViewById<TextView>(R.id.fact_textView).text = when (result) {
+            is Result.Placeholder -> result.message
+            is Result.Success -> result.data.text
+            is Result.Error -> result.message
+        }
     }
 }
 
 interface ICatsView {
 
-    fun populate(fact: Fact)
+    fun populate(result: Result<Fact>)
 }

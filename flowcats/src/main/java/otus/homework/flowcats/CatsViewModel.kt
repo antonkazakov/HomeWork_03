@@ -9,18 +9,18 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsFlow = MutableStateFlow(Fact("", false, "", "", "", false, "", "", ""))
-    val catsFlow: StateFlow<Fact> = _catsFlow
+    private val _catsFlow = MutableStateFlow<Result<Fact>>(Result.Placeholder("No facts yet"))
+    val catsFlow: StateFlow<Result<Fact>> = _catsFlow
 
     init {
         viewModelScope.launch {
             catsRepository.listenForCatFacts()
                 .flowOn(Dispatchers.IO)
                 .catch {
-                    it.printStackTrace()
+                    _catsFlow.value = Result.Error(it.localizedMessage ?: "Unknown error")
                 }
                 .collect {
-                    _catsFlow.value = it
+                    _catsFlow.value = Result.Success(it)
                 }
         }
     }
