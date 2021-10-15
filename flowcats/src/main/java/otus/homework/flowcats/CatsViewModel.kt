@@ -2,29 +2,37 @@ package otus.homework.flowcats
 
 import android.util.Log
 import androidx.lifecycle.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.net.SocketTimeoutException
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableLiveData<Fact>()
-    val catsLiveData: LiveData<Fact> = _catsLiveData
+    private val _catsLiveData = MutableStateFlow<Result?>(null)
+    val catsLiveData = _catsLiveData.asStateFlow()
 
     init {
         viewModelScope.launch {
             catsRepository
                 .listenForCatFacts()
-                .flowOn(Dispatchers.IO)
-                .catch {
+                .retry {
                     Log.e("CatsViewModel", "caught exception: $it", it)
+                    if (it is SocketTimeoutException) {
+                        _catsLiveData.emit(Error(message = "could not fetch server response"))
+                        true
+                    } else {
+                        false
+                    }
+                }
+                    // catch errors in case retry was not used
+                .catch  { throwable ->
+                    Log.e("CatsViewModel", "caught exception: $throwable", throwable)
+                    _catsLiveData.emit(Error(message = "stop trying to get server response"))
                 }
                 .collect {
-                    _catsLiveData.value = it
+                    _catsLiveData.value = Success(it)
                 }
         }
     }
@@ -35,3 +43,7 @@ class CatsViewModelFactory(private val catsRepository: CatsRepository) :
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
         CatsViewModel(catsRepository) as T
 }
+
+sealed class Result
+data class Success<T>(val result: T) : Result()
+data class Error(val message: String) : Result()
