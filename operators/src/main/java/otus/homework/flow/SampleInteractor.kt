@@ -20,10 +20,10 @@ class SampleInteractor(
      */
     fun task1(): Flow<String> {
         return sampleRepository.produceNumbers()
-            .map { it.toFloat().pow(5).toLong() }
+            .map { it * 5 }
             .filterNot { it <= 20L }
             .filterNot { it % 2L == 0L }
-            .map { "won$it" }
+            .map { "$it won" }
             .take(3)
     }
 
@@ -38,24 +38,22 @@ class SampleInteractor(
         return sampleRepository
             .produceNumbers()
             .transform {
-                var canBeDivided = false
-                if (it % 3 == 0) {
-                    emit(it.toString())
-                    emit("Fizz")
-                    canBeDivided = true
-                }
-                if (it % 5 == 0) {
-                    emit(it.toString())
-                    emit("Buzz")
-                    canBeDivided = true
-                }
-                if (it % 15 == 0) {
-                    emit(it.toString())
-                    emit("FizzBuzz")
-                    canBeDivided = true
-                }
-                if (!canBeDivided) {
-                    emit(it.toString())
+                when {
+                    it % 15 == 0 -> {
+                        emit(it.toString())
+                        emit("FizzBuzz")
+                    }
+                    it % 3 == 0 -> {
+                        emit(it.toString())
+                        emit("Fizz")
+                    }
+                    it % 5 == 0 -> {
+                        emit(it.toString())
+                        emit("Buzz")
+                    }
+                    else -> {
+                        emit(it.toString())
+                    }
                 }
             }
     }
@@ -66,9 +64,9 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return sampleRepository.produceNumbers()
-            .zip(sampleRepository.produceColors()) { first, second ->
-                Pair(first.toString(), second)
+        return sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { first, second ->
+                Pair(first, second)
             }
     }
 
