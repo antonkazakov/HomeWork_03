@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -30,6 +31,7 @@ class SampleInteractorTest {
         assertEquals(actual, expected)
     }
 
+    @FlowPreview
     @Test
     fun `test task2`() = runBlockingTest {
         every { dotsRepository.produceNumbers() } returns (1..21).asFlow()
