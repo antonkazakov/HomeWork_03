@@ -17,10 +17,6 @@ class CatsViewModel(
     private val _catsStateFlow = MutableStateFlow<ResultModel<Fact>?>(null)
     val catsStateFlow = _catsStateFlow.asStateFlow()
 
-    /**
-     *  private val _counter = MutableStateFlow(0) // private mutable state flow
-     *  val counter = _counter.asStateFlow() // publicly exposed as read-only state flow
-     */
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
