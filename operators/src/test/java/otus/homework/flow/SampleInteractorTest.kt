@@ -68,7 +68,6 @@ class SampleInteractorTest {
             "Fizz"
         )
         val actual = dotsInteractor.task2().toList()
-
         assertEquals(actual, expected)
     }
 
@@ -103,7 +102,8 @@ class SampleInteractorTest {
 
         val expected = listOf(1, 2, 3, 4, -1)
         val actual = dotsInteractor.task4().toList()
-
+        println("1$actual")
+        println("2$expected")
         assertEquals(actual, expected)
 
         verify(exactly = 1) { dotsRepository.completed() }
@@ -121,7 +121,7 @@ class SampleInteractorTest {
             }
         }
 
-        assertThrows(SecurityException::class.java){
+        assertThrows(SecurityException::class.java) {
             runBlockingTest {
                 dotsInteractor.task4().toList()
             }
