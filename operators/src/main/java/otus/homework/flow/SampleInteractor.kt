@@ -38,7 +38,9 @@ class SampleInteractor(
     fun task2(): Flow<String> {
         return sampleRepository.produceNumbers()
             .transform {
-                val str = "${if(it % 3 == 0) "Fizz" else ""}${if(it % 5 == 0) "Buzz" else ""}"
+                val fizz = if(it % 3 == 0) "Fizz" else ""
+                val buzz = if(it % 5 == 0) "Buzz" else ""
+                val str = "$fizz$buzz"
                 emit("$it")
                 if(str.isNotEmpty()) emit(str)
             }

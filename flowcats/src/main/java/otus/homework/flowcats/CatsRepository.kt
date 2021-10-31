@@ -9,18 +9,13 @@ class CatsRepository(
     private val refreshIntervalMs: Long = 5000
 ) {
 
-    fun listenForCatFacts() = flow<Result> {
-        while (true) {
-            val latestNews = catsService.getCatFact()
-            emit(Success(latestNews))
-            delay(refreshIntervalMs)
+    fun listenForCatFacts() = flow<Fact?> {
+            while (true) {
+                emit(catsService.getCatFact())
+                delay(refreshIntervalMs)
+            }
         }
-    }.catch {
-        emit(Error)
-    }.flowOn(Dispatchers.IO)
+        //можно эмитить например специальную разновидность факта с какими-то данными связанными с ошибкой
+        .catch { emit(null)}
+        .flowOn(Dispatchers.IO)
 }
-
-sealed class Result
-object Loading: Result()
-object Error: Result()
-data class Success(val fact: Fact) : Result()

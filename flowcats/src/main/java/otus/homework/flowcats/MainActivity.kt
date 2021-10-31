@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launchWhenCreated{
             catsViewModel.catsFlow.collect {
                 when(it){
-                    //is Loading -> {}
+                    is Loading -> {}
                     is Error -> Toast.makeText(this@MainActivity, R.string.server_error, Toast.LENGTH_LONG).show()
                     is Success -> view.populate(it.fact)
                 }
