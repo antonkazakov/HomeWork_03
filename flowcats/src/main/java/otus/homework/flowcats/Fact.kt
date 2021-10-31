@@ -21,4 +21,6 @@ data class Fact(
 	val user: String,
 	@field:SerializedName("updatedAt")
 	val updatedAt: String
-)
+) {
+	constructor() : this("",false,"","","",false,"","","")
+}
