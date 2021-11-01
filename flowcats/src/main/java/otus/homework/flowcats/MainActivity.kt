@@ -3,6 +3,8 @@ package otus.homework.flowcats
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.collect
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,9 +15,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
-
-        catsViewModel.catsLiveData.observe(this){
-            view.populate(it)
+        lifecycleScope.launchWhenStarted {
+            catsViewModel.catsStateFlow.collect {
+                when (it) {
+                    is Result.Succsess -> view.populate(it.fact)
+                    is Result.Error -> view.getError(it.e)
+                    is Result.Empty -> view.populate(Fact(text = "Данные еще не поступили"))
+                }
+            }
         }
     }
 }
