@@ -24,26 +24,28 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    catsViewModel.cats
-                        .filterNotNull()
-                        .collect { fact ->
-                            fact.let { view.populate(it) }
-                        }
-                }
-
-                launch {
-                    catsViewModel.error
+                    catsViewModel.state
                         .filterNotNull()
                         .collect {
-                            Toast.makeText(
-                                this@MainActivity,
-                                it.message ?: "Error",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            when (it) {
+                                is CatResultModel.Success<*> -> view.populate(it.answer as Fact)
+                                is CatResultModel.Error -> showToast(
+                                    it.exception.message ?: "Error"
+                                )
+                            }
+
                         }
                 }
             }
         }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(
+            this@MainActivity,
+            message,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
 
