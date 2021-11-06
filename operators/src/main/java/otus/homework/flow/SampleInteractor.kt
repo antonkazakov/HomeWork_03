@@ -39,22 +39,16 @@ class SampleInteractor(
     fun task2(): Flow<String> {
         return sampleRepository.produceNumbers()
             .transform { number ->
+                emit("$number")
                 when {
                     number % 15 == 0 -> {
-                        emit("$number")
                         emit("FizzBuzz")
                     }
                     number % 5 == 0 -> {
-                        emit("$number")
                         emit("Buzz")
                     }
                     number % 3 == 0 -> {
-                        emit("$number")
                         emit("Fizz")
-                    }
-
-                    else -> {
-                        emit("$number")
                     }
                 }
             }
