@@ -4,10 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class CatsViewModel(
@@ -20,14 +17,10 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            try {
-                catsRepository.listenForCatFacts()
-                    .flowOn(Dispatchers.IO)
-                    .collect { _state.value = CatResultModel.Success(it) }
-
-            } catch (e: Exception) {
-                _state.value = CatResultModel.Error(e)
-            }
+            catsRepository.listenForCatFacts()
+                .flowOn(Dispatchers.IO)
+                .catch { _state.value = CatResultModel.Error(it.message ?: "Error") }
+                .collect { _state.value = CatResultModel.Success(it) }
         }
     }
 }

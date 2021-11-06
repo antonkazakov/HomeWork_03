@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
                 .collect {
                     when (it) {
                         is CatResultModel.Success<*> -> view.populate(it.answer as Fact)
-                        is CatResultModel.Error -> showToast(it.exception.message ?: "Error")
+                        is CatResultModel.Error -> showToast(it.message)
                     }
                 }
         }
