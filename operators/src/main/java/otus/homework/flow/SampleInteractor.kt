@@ -83,7 +83,7 @@ class SampleInteractor(
     fun task4(): Flow<Int> {
         return sampleRepository.produceNumbers()
             .catch {
-                if (it is java.lang.IllegalArgumentException) {
+                if (it !is java.lang.IllegalArgumentException) {
                     println("it is IllegalStateException")
                     emit(-1)
                 }

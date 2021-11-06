@@ -5,25 +5,31 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsStateFlow = MutableStateFlow<ResultModel<Fact>?>(null)
-    val catsStateFlow = _catsStateFlow.asStateFlow()
+
+    private val _cats = MutableStateFlow<Fact?>(null)
+    val cats: StateFlow<Fact?> = _cats
+
+    private val _error = MutableStateFlow<Exception?>(null)
+    val error: StateFlow<Exception?> = _error
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+            try {
                 catsRepository.listenForCatFacts()
-                    .collect {
-                        _catsStateFlow.value = it
-                    }
+                    .flowOn(Dispatchers.IO)
+                    .collect { _cats.value = it }
+
+            } catch (e: Exception) {
+                _error.value = e
             }
         }
     }
