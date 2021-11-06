@@ -5,8 +5,8 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -22,21 +22,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    catsViewModel.state
-                        .filterNotNull()
-                        .collect {
-                            when (it) {
-                                is CatResultModel.Success<*> -> view.populate(it.answer as Fact)
-                                is CatResultModel.Error -> showToast(
-                                    it.exception.message ?: "Error"
-                                )
-                            }
-
-                        }
+            catsViewModel.state
+                .filterNotNull()
+                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .collect {
+                    when (it) {
+                        is CatResultModel.Success<*> -> view.populate(it.answer as Fact)
+                        is CatResultModel.Error -> showToast(it.exception.message ?: "Error")
+                    }
                 }
-            }
         }
     }
 
