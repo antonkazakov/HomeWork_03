@@ -19,7 +19,10 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             catsViewModel.catsStateFlow.collect {
-                view.populate(it)
+                when(it) {
+                    is Success<*> -> if(it.data is Fact) view.populate(it.data)
+                    is Error ->  view.showToast(it.error)
+                }
             }
         }
     }
