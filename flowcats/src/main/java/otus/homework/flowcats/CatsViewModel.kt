@@ -19,7 +19,6 @@ class CatsViewModel(
     init {
         viewModelScope.launch {
                 catsRepository.listenForCatFacts()
-                    .flowOn(Dispatchers.IO)
                     .collect {
                          _catsFlow.value = it
                         }

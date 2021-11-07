@@ -39,21 +39,16 @@ class SampleInteractor(
         //return flowOf()
         return sampleRepository.produceNumbers()
             .transform {
+                emit(it.toString())
                 when {
                     it %15 == 0 -> {
-                        emit(it.toString())
                         emit("FizzBuzz")
                     }
                     it %5 == 0 -> {
-                        emit(it.toString())
                         emit( "Buzz")
                     }
                     it %3 == 0 -> {
-                        emit(it.toString())
                         emit("Fizz")
-                    }
-                    else -> {
-                        emit(it.toString())
                     }
                 }
             }
