@@ -19,14 +19,16 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
         lifecycleScope.launch {
-            launch {
-                catsViewModel.cats.filterNotNull().collect {
-                    view.populate(it)
-                }
-            }
-            launch {
-                catsViewModel.error.filterNotNull().collect {
-                    Toast.makeText(this@MainActivity, it.message ?: "", Toast.LENGTH_SHORT).show()
+            catsViewModel.state.collect {
+                when(it) {
+                    is CatsViewModel.State.IsLoading -> Unit
+                    is CatsViewModel.State.ShowFact -> view.populate(it.fact)
+                    is CatsViewModel.State.ShowError ->
+                        Toast.makeText(
+                            this@MainActivity,
+                            it.error.message ?: "",
+                            Toast.LENGTH_SHORT
+                        ).show()
                 }
             }
         }

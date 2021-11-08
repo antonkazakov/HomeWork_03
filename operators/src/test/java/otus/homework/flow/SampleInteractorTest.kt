@@ -7,6 +7,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
@@ -102,7 +103,9 @@ class SampleInteractorTest {
         }
 
         val expected = listOf(1, 2, 3, 4, -1)
-        val actual = dotsInteractor.task4().toList()
+        val actual = dotsInteractor.task4().onCompletion {
+            dotsRepository.completed()
+        }.toList()
 
         assertEquals(actual, expected)
 
