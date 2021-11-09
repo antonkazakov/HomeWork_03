@@ -2,7 +2,7 @@ package otus.homework.flowcats
 
 import com.google.gson.annotations.SerializedName
 
-data class Fact(
+data class FactDTO(
 	@field:SerializedName("createdAt")
 	val createdAt: String,
 	@field:SerializedName("deleted")
@@ -22,3 +22,7 @@ data class Fact(
 	@field:SerializedName("updatedAt")
 	val updatedAt: String
 )
+
+fun FactDTO.toDomainModel(): Fact {
+	return Fact(this.text)
+}
