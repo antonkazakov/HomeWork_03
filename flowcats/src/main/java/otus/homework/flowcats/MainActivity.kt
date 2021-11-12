@@ -13,10 +13,7 @@ class MainActivity : AppCompatActivity() {
 
     private val diContainer = DiContainer()
     private val catsViewModel by viewModels<CatsViewModel> {
-        CatsViewModelFactory(
-            diContainer.repository,
-            diContainer.coroutineDispatchers
-        )
+        CatsViewModelFactory(diContainer.repository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
