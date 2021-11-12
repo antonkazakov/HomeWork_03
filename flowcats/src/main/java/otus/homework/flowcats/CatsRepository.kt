@@ -2,9 +2,11 @@ package otus.homework.flowcats
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 class CatsRepository(
     private val catsService: CatsService,
+    private val coroutineDispatchers: CoroutineDispatchers,
     private val refreshIntervalMs: Long = 5000
 ) {
 
@@ -18,5 +20,5 @@ class CatsRepository(
                 emit(Result.Error(e.localizedMessage))
             }
         }
-    }
+    }.flowOn(coroutineDispatchers.ioDispatcher)
 }

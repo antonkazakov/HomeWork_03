@@ -14,7 +14,7 @@ class DiContainer {
 
     val service by lazy { retrofit.create(CatsService::class.java) }
 
-    val repository by lazy { CatsRepository(service) }
-
     val coroutineDispatchers by lazy { CoroutineDispatchersImpl() }
+
+    val repository by lazy { CatsRepository(service, coroutineDispatchers) }
 }
