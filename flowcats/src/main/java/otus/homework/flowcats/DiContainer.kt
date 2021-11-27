@@ -1,5 +1,7 @@
 package otus.homework.flowcats
 
+import otus.homework.flowcats.data.CatsRepository
+import otus.homework.flowcats.data.CatsService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

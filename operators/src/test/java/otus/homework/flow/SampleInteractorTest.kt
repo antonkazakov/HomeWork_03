@@ -68,7 +68,6 @@ class SampleInteractorTest {
             "Fizz"
         )
         val actual = dotsInteractor.task2().toList()
-
         assertEquals(actual, expected)
     }
 
@@ -82,10 +81,8 @@ class SampleInteractorTest {
             "White"
         )
         every { dotsRepository.produceForms() } returns flowOf("Circle", "Square", "Triangle")
-
         val expected = listOf("Red" to "Circle", "Green" to "Square", "Blue" to "Triangle")
         val actual = dotsInteractor.task3().toList()
-
         assertEquals(actual, expected)
     }
 
