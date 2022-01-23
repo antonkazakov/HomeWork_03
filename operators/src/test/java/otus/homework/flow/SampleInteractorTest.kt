@@ -27,7 +27,7 @@ class SampleInteractorTest {
         val expected = listOf("35 won", "55 won", "25 won")
         val actual = dotsInteractor.task1().toList()
 
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
     }
 
     @Test
