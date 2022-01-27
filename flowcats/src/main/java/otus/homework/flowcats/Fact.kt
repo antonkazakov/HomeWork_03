@@ -22,3 +22,4 @@ data class Fact(
 	@field:SerializedName("updatedAt")
 	val updatedAt: String
 )
+
