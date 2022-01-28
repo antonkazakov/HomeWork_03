@@ -2,6 +2,7 @@ package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlin.math.pow
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -18,7 +19,9 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return flowOf(7, 12, 4, 8, 11, 5, 7, 16, 99, 1).map {
+            it * 5
+        }.filter { it > 20 }.filter { it % 2 == 1 }.map { "$it won" }.take(3)
     }
 
     /**
@@ -29,7 +32,23 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return (1..21).asFlow().transform {
+            when (true) {
+                it % 15 == 0 -> {
+                    emit(it.toString())
+                    emit("FizzBuzz")
+                }
+                it % 5 == 0 -> {
+                    emit(it.toString())
+                    emit("Buzz")
+                }
+                it % 3 == 0 -> {
+                    emit(it.toString())
+                    emit("Fizz")
+                }
+                else -> emit(it.toString())
+            }
+        }
     }
 
     /**
@@ -38,7 +57,15 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return flowOf("Circle", "Square", "Triangle").zip(
+            flowOf(
+                "Red",
+                "Green",
+                "Blue",
+                "Black",
+                "White"
+            )
+        ) { form, color -> Pair(color, form) }
     }
 
     /**
@@ -48,6 +75,21 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return flow {
+            (1..10).forEach {
+                if (it == 5) {
+                    throw SecurityException("Security breach")
+                } else {
+                    emit(it)
+                }
+            }
+        }.catch { cause ->
+            if (cause is IllegalArgumentException) {
+                emit(-1)
+            }
+            else throw cause
+        }.onCompletion {
+            sampleRepository.completed()
+        }
     }
 }
