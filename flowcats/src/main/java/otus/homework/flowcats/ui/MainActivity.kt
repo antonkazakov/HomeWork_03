@@ -15,7 +15,7 @@ import otus.homework.flowcats.ui.model.Result
 class MainActivity : AppCompatActivity() {
 
 	private val diContainer = DiContainer()
-	private val catsViewModel by viewModels<CatsViewModel> { CatsViewModelFactory(diContainer.repositoryMock) }
+	private val catsViewModel by viewModels<CatsViewModel> { CatsViewModelFactory(diContainer.repository) }
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)

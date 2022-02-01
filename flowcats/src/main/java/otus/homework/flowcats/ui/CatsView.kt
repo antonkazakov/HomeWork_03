@@ -30,7 +30,6 @@ class CatsView @JvmOverloads constructor(
 }
 
 interface ICatsView {
-
 	fun populate(fact: Fact)
 	fun showError(msg: String)
 	fun setProgressVisibility(isVisible:Boolean)

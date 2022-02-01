@@ -53,12 +53,10 @@ class SampleInteractor(
 	 * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
 	 */
 	fun task3(): Flow<Pair<String, String>> {
-		return sampleRepository.produceColors()
-			.zip(sampleRepository.produceForms(), ::combineFunc)
-	}
+		val f1 = sampleRepository.produceColors()
+		val f2 = sampleRepository.produceForms()
 
-	private suspend fun combineFunc(a: String, b: String): Pair<String, String> = suspendCoroutine {
-		it.resume(Pair(a, b))
+		return  f1.zip(f2,{f1,f2->Pair(f1,f2)})
 	}
 
 	/**
