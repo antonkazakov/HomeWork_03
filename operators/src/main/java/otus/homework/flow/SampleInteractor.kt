@@ -2,6 +2,8 @@ package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import java.lang.Exception
+import java.lang.IllegalArgumentException
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -17,9 +19,18 @@ class SampleInteractor(
      * 5) берет 3 первых числа
      * 6) возвращает результат
      */
-    fun task1(): Flow<String> {
-        return flowOf()
-    }
+    fun task1(): Flow<String> =
+        sampleRepository.produceNumbers()
+            .map { number ->
+                number * 5
+            }
+            .filter {number ->
+                number > 20 && number % 2 == 1
+            }
+            .map { number ->
+                "$number won"
+            }
+            .take(3)
 
     /**
      * Классическая задача FizzBuzz с небольшим изменением.
@@ -29,7 +40,18 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return flow {
+            sampleRepository.produceNumbers()
+                .collect {
+                    emit(it.toString())
+                    if (it % 15 == 0)
+                        emit("FizzBuzz")
+                    else if (it % 3 == 0)
+                        emit("Fizz")
+                    else if (it % 5 == 0)
+                        emit("Buzz")
+                }
+        }
     }
 
     /**
@@ -38,7 +60,11 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        val forms = sampleRepository.produceForms()
+        val colors = sampleRepository.produceColors()
+        return colors.zip(forms) {color, form ->
+            Pair(color, form)
+        }
     }
 
     /**
@@ -47,7 +73,16 @@ class SampleInteractor(
      * Если тип эксепшена != IllegalArgumentException, пробросьте его дальше
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
-    fun task4(): Flow<Int> {
-        return flowOf()
-    }
+    fun task4(): Flow<Int> =
+        sampleRepository.produceNumbers()
+                .catch { e ->
+                    if (e is IllegalArgumentException)
+                        emit(-1)
+                    else
+                        throw e
+                }
+                .onCompletion {
+                    sampleRepository.completed()
+                }
+
 }
