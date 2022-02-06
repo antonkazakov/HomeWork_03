@@ -15,5 +15,5 @@ class CatsRepository(
             emit(Result.Success(latestNews))
             delay(refreshIntervalMs)
         }
-    }.catch { cause: Throwable -> emit(Result.Error(cause.message ?: "Unknown error")) }
+    }
 }
