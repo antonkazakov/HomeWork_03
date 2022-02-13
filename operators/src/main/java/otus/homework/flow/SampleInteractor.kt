@@ -37,19 +37,16 @@ class SampleInteractor(
             .transform {
                 when {
                     it % 15 == 0 -> {
-                        emit("$it")
                         emit("FizzBuzz")
                     }
                     it % 3 == 0 -> {
-                        emit("$it")
                         emit("Fizz")
                     }
                     it % 5 == 0 -> {
-                        emit("$it")
                         emit("Buzz")
                     }
-                    else -> emit("$it")
                 }
+                emit("$it")
             }
     }
 

@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
                 when (it) {
                     is Error -> Toast.makeText(this@MainActivity,"Error", Toast.LENGTH_SHORT)
                         .show()
-                    is Success<Fact> -> it.result?.let { fact -> view.populate(fact) }
+                    is Success -> it.result?.let { fact -> view.populate(fact) }
                 }
 
             }

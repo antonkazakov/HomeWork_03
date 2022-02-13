@@ -15,18 +15,18 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableStateFlow<Result<Fact>>(Success(null))
+    private val _catsLiveData = MutableStateFlow<Result<Fact>>(Success())
     val catsLiveData: StateFlow<Result<Fact>> = _catsLiveData
 
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts()
-                    .catch {
-                        emit(Error(it))
+                    .catch { throwable ->
+                        _catsLiveData.tryEmit(Error(throwable))
                     }
                     .collect {
-                        _catsLiveData.tryEmit(it)
+                        _catsLiveData.tryEmit(Success(it))
                     }
             }
         }
