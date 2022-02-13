@@ -1,9 +1,11 @@
 package otus.homework.flowcats
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Message
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -20,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch {
             catsViewModel.catsLiveData.collect { fact ->
                 fact?.let {
                     withContext(Dispatchers.Main) { view.populate(it) }

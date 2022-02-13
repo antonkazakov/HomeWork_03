@@ -33,20 +33,17 @@ class SampleInteractor(
      */
     fun task2(): Flow<String> {
         return (1..21).asFlow().transform {
+
             when (true) {
                 it % 15 == 0 -> {
-                    emit(it.toString())
                     emit("FizzBuzz")
                 }
                 it % 5 == 0 -> {
-                    emit(it.toString())
                     emit("Buzz")
                 }
                 it % 3 == 0 -> {
-                    emit(it.toString())
                     emit("Fizz")
                 }
-                else -> emit(it.toString())
             }
         }
     }
@@ -75,19 +72,16 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flow {
-            (1..10).forEach {
-                if (it == 5) {
-                    throw SecurityException("Security breach")
-                } else {
-                    emit(it)
-                }
+        return (1..10).asFlow().map {
+            if(it == 5){
+                throw SecurityException("Security breach")
             }
+            else it
         }.catch { cause ->
             if (cause is IllegalArgumentException) {
-                emit(-1)
+            emit(-1)
             }
-            else throw cause
+          else throw cause
         }.onCompletion {
             sampleRepository.completed()
         }

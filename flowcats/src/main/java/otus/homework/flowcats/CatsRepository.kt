@@ -1,7 +1,9 @@
 package otus.homework.flowcats
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.lang.Exception
 
 class CatsRepository(
@@ -20,5 +22,5 @@ class CatsRepository(
                 emit(Result.Error("Unexpected exception occurred", null))
             }
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }
