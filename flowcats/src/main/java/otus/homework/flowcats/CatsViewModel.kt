@@ -11,27 +11,7 @@ import otus.homework.flowcats.Result.*
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
-
-    private val _catsStateFlow = MutableStateFlow<Fact?>(null)
-    val catsLiveData: StateFlow<Fact?> = _catsStateFlow
-
-    private val _toastMessage = MutableStateFlow<String?>(null)
-    val toastMessage: StateFlow<String?> = _toastMessage
-
-    init {
-        viewModelScope.launch {
-                catsRepository.listenForCatFacts().collect { result ->
-                    when(result){
-                        is Success -> {
-                            _catsStateFlow.emit(result.data)
-                        }
-                        is Error -> {
-                            _toastMessage.emit(result.message)
-                        }
-                    }
-                }
-        }
-    }
+    fun getCatFacts() = catsRepository.listenForCatFacts()
 }
 
 class CatsViewModelFactory(private val catsRepository: CatsRepository) :

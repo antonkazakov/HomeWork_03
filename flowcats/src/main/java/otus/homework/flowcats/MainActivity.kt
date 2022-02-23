@@ -1,16 +1,16 @@
 package otus.homework.flowcats
 
 import android.os.Bundle
-import android.os.Message
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import otus.homework.flowcats.Result.Error
+import otus.homework.flowcats.Result.Success
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,26 +20,30 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
+        initObservers(view)
         setContentView(view)
+    }
 
+    private fun initObservers(view: CatsView) {
         lifecycleScope.launch {
-            catsViewModel.catsLiveData.collect { fact ->
-                fact?.let {
-                    withContext(Dispatchers.Main) { view.populate(it) }
-                }
-            }
-            catsViewModel.toastMessage.collect { message ->
-                message?.let {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            this@MainActivity,
-                            it,
-                            Toast.LENGTH_LONG
-                        ).show()
+            catsViewModel.getCatFacts().collect { result ->
+                when (result) {
+                    is Success -> {
+                        result.data?.let {
+                            view.populate(it)
+                        }
+                    }
+                    is Error -> {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@MainActivity,
+                                result.message,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 }
             }
         }
-
     }
 }

@@ -1,6 +1,6 @@
 package otus.homework.flowcats
 
-sealed class Result<T>(val data: T? = null, val message: String? = null) {
-    class Success<T>(data: T?): Result<T>(data)
-    class Error<T>(message: String, data: T?): Result<T>(message = message, data = data)
+sealed class Result<T>() {
+    class Success<T>(val data: T?): Result<T>()
+    class Error<T>(val message: String, val data: T?): Result<T>()
 }
