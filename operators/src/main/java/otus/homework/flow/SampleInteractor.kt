@@ -75,6 +75,9 @@ class SampleInteractor(
      */
     fun task4(): Flow<Int> {
         return sampleRepository.produceNumbers()
+            .onCompletion {
+                if (it == null) sampleRepository.completed()
+            }
             .catch { throwable ->
                 sampleRepository.completed()
                 when (throwable) {

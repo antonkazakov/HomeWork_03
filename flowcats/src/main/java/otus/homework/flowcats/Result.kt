@@ -5,4 +5,5 @@ sealed class Result<out T> {
     data class Error(
         val msg: String?
     ) : Result<Nothing>()
+    object InitState : Result<Nothing>()
 }

@@ -16,20 +16,18 @@ class CatsViewModel(
     private val _catsLiveData = MutableLiveData<Fact>()
     val catsLiveData: LiveData<Fact> = _catsLiveData
 
-    private val _catsStateFlow: MutableStateFlow<Result<Fact?>> by lazy { MutableStateFlow(Result.Success(null)) }
-    val catsStateFlow: StateFlow<Result<Fact?>> = _catsStateFlow
+    private val _catsStateFlow: MutableStateFlow<Result<Fact>> = MutableStateFlow(Result.InitState)
+    val catsStateFlow: StateFlow<Result<Fact>> = _catsStateFlow
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                try {
-                    catsRepository.listenForCatFacts().collect {
-                        _catsLiveData.postValue(it)
-                        _catsStateFlow.emit(Result.Success(it))
-                    }
-                } catch (e: Exception) {
-                    _catsStateFlow.emit(Result.Error(e.message))
+            try {
+                catsRepository.listenForCatFacts().collect {
+                    _catsLiveData.postValue(it)
+                    _catsStateFlow.emit(Result.Success(it))
                 }
+            } catch (e: Exception) {
+                _catsStateFlow.emit(Result.Error(e.message))
             }
         }
     }
