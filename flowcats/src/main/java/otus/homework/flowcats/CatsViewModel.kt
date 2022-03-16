@@ -1,27 +1,14 @@
 package otus.homework.flowcats
 
-import androidx.lifecycle.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableLiveData<Fact>()
-    val catsLiveData: LiveData<Fact> = _catsLiveData
+    fun getCatFacts() = catsRepository.listenForCatFacts()
 
-    init {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.value = it
-                }
-            }
-        }
-    }
 }
 
 class CatsViewModelFactory(private val catsRepository: CatsRepository) :

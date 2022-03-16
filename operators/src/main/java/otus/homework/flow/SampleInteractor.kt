@@ -18,7 +18,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return flowOf(7, 12, 4, 8, 11, 5, 7, 16, 99, 1).map {
+            it * 5
+        }.filter { it > 20 }
+            .filter { it % 2 == 1 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -29,7 +34,21 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return (1..21).asFlow().transform {
+
+            emit(it.toString())
+            when {
+                it % 15 == 0 -> {
+                    emit("FizzBuzz")
+                }
+                it % 5 == 0 -> {
+                    emit("Buzz")
+                }
+                it % 3 == 0 -> {
+                    emit("Fizz")
+                }
+            }
+        }
     }
 
     /**
@@ -38,7 +57,16 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return flowOf("Circle", "Square", "Triangle")
+            .zip(
+                flowOf(
+                    "Red",
+                    "Green",
+                    "Blue",
+                    "Black",
+                    "White"
+                )
+            ) { form, color -> Pair(color, form) }
     }
 
     /**
@@ -47,7 +75,15 @@ class SampleInteractor(
      * Если тип эксепшена != IllegalArgumentException, пробросьте его дальше
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
-    fun task4(): Flow<Int> {
-        return flowOf()
-    }
+    fun task4(): Flow<Int> =
+        sampleRepository.produceNumbers()
+            .catch { e ->
+                if (e is IllegalArgumentException)
+                    emit(-1)
+                else
+                    throw e
+            }
+            .onCompletion {
+                sampleRepository.completed()
+            }
 }
