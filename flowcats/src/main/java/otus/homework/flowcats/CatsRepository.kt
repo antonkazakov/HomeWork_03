@@ -1,9 +1,8 @@
 package otus.homework.flowcats
 
-import kotlinx.coroutines.Dispatchers
+import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 
 class CatsRepository(
     private val catsService: CatsService,
@@ -15,10 +14,13 @@ class CatsRepository(
             try {
                 val latestNews = catsService.getCatFact()
                 emit(Result.Success(latestNews))
-                delay(refreshIntervalMs)
+                Log.d("CatsRepository", "${latestNews.createdAt} ${latestNews.text}")
             } catch (e: Exception) {
                 emit(Result.Error("Unexpected exception occurred", null))
+                Log.d("CatsRepository", "Error - Unexpected exception occurred")
+            } finally {
+                delay(refreshIntervalMs)
             }
         }
-    }.flowOn(Dispatchers.IO)
+    }
 }

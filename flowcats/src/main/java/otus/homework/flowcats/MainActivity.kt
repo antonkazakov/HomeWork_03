@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -25,8 +26,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initObservers(view: CatsView) {
-        lifecycleScope.launch {
-            catsViewModel.getCatFacts().collect { result ->
+        lifecycleScope.launchWhenResumed {
+            catsViewModel.getCatFacts()
+                .collect { result ->
                 when (result) {
                     is Success -> {
                         result.data?.let {
