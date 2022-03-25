@@ -9,31 +9,36 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import otus.homework.flowcats.data.CatsRepository
 import otus.homework.flowcats.data.Fact
+import otus.homework.flowcats.data.FactUiState
+import java.lang.Exception
+
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsStateData: MutableStateFlow<Result<Fact>> = MutableStateFlow(Result.Loading)
-    val catsStateData: StateFlow<Result<Fact>> = _catsStateData
+    private val _uiState: MutableStateFlow<FactUiState> = MutableStateFlow(FactUiState.Loading)
+    val uiState: StateFlow<FactUiState> = _uiState
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts()
-                    .catch { ex ->  _catsStateData.value = Result.Error(ex as Exception) }
-                    .collect {
-                        _catsStateData.value = Result.Loading
-                        delay(5000)
-                        _catsStateData.value = Result.Success(it)
-                    }
-            }
+            catsRepository.listenForCatFacts()
+                .catch { ex -> _uiState.value = FactUiState.Error(ex) }
+                .flowOn(Dispatchers.IO)
+                .onEach {
+                    _uiState.value = FactUiState.Loading
+                }
+                .flowOn(Dispatchers.Main)
+                .collect { fact ->
+                    _uiState.value = FactUiState.Success(fact)
+                }
         }
     }
-}
 
-class CatsViewModelFactory(private val catsRepository: CatsRepository) :
-    ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-        CatsViewModel(catsRepository) as T
+
+    class CatsViewModelFactory(private val catsRepository: CatsRepository) :
+        ViewModelProvider.NewInstanceFactory() {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+            CatsViewModel(catsRepository) as T
+    }
 }
