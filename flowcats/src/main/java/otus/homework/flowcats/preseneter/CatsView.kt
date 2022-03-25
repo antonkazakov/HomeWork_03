@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import otus.homework.flowcats.data.Fact
 
 class CatsView @JvmOverloads constructor(
     context: Context,
