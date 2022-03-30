@@ -36,20 +36,11 @@ class SampleInteractor(
     fun task2(): Flow<String> {
         return sampleRepository.produceNumbers()
             .transform { value ->
+                emit(value.toString())
                 when {
-                    value % 15 == 0 -> {
-                        emit(value.toString())
-                        emit("FizzBuzz")
-                    }
-                    value % 3 == 0 -> {
-                        emit(value.toString())
-                        emit("Fizz")
-                    }
-                    value % 5 == 0 -> {
-                        emit(value.toString())
-                        emit("Buzz")
-                    }
-                    else -> emit(value.toString())
+                    value % 15 == 0 -> emit("FizzBuzz")
+                    value % 3 == 0 -> emit("Fizz")
+                    value % 5 == 0 -> emit("Buzz")
                 }
             }
     }
