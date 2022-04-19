@@ -20,7 +20,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         catsViewModel.catsFlow
-            .onEach(view::populate)
+            .onEach {
+                when (it) {
+                    is CatsViewModel.Result.Success -> view.populate(it.value)
+                    is CatsViewModel.Result.Error -> view.showToast(it.error.message)
+                }
+            }
             .launchIn(lifecycleScope)
     }
 }
