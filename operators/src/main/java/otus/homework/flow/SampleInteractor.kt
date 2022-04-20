@@ -10,7 +10,7 @@ class SampleInteractor(
 
     /**
      * Реализуйте функцию task1 которая последовательно:
-     * 1) возводит числа в 5ую степень
+     * 1) возводит числа в 5ую степень?
      * 2) убирает чила <= 20
      * 3) убирает четные числа
      * 4) добавляет постфикс "won"
@@ -18,7 +18,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { it.times(5) }
+            .filter { it > 20 }
+            .filter { it % 2 != 0 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -29,7 +34,15 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers().transform {
+            emit(it.toString())
+
+            when {
+                it % 15 == 0 -> emit("FizzBuzz")
+                it % 5 == 0 -> emit("Buzz")
+                it % 3 == 0 -> emit("Fizz")
+            }
+        }
     }
 
     /**
@@ -38,7 +51,14 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        val colors = sampleRepository.produceColors()
+        val forms = sampleRepository.produceForms()
+
+        val result = colors.zip(forms) { color, form ->
+            Pair(color, form)
+        }
+
+        return result
     }
 
     /**
@@ -48,6 +68,14 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers().catch { throwable ->
+            sampleRepository.completed()
+
+            if (throwable is IllegalArgumentException) {
+                emit(-1)
+            } else {
+                throw throwable
+            }
+        }
     }
 }
