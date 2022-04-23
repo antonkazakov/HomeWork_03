@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import java.net.SocketTimeoutException
 
 class CatsRepository(
     private val catsService: CatsService,
@@ -13,6 +14,8 @@ class CatsRepository(
     fun listenForCatFacts() = flow {
         while (true) {
             val latestNews = catsService.getCatFact()
+            delay(3000)
+            throw SocketTimeoutException()
             emit(latestNews)
             delay(refreshIntervalMs)
         }
