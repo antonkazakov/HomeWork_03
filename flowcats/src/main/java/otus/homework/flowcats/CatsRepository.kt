@@ -15,7 +15,6 @@ class CatsRepository(
         while (true) {
             val latestNews = catsService.getCatFact()
             delay(3000)
-            throw SocketTimeoutException()
             emit(latestNews)
             delay(refreshIntervalMs)
         }
