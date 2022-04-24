@@ -2,7 +2,6 @@ package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
-import kotlin.math.pow
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -11,7 +10,7 @@ class SampleInteractor(
 
     /**
      * Реализуйте функцию task1 которая последовательно:
-     * 1) возводит числа в 5ую степень
+     * 1) возводит числа в 5ую степень ? В тестах ожидается умножение
      * 2) убирает чила <= 20
      * 3) убирает четные числа
      * 4) добавляет постфикс "won"
@@ -19,8 +18,8 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1() = sampleRepository.produceNumbers()
-        .map { it.toDouble().pow(5).toInt() }
-        .filter { it <= 20 }
+        .map { it * 5 }
+        .filter { it > 20 }
         .filter { it % 2 != 0 }
         .map { "$it won" }
         .take(3)
@@ -52,6 +51,7 @@ class SampleInteractor(
             Pair(color, form)
         }
 
+
     /**
      * Реализайте функцию task4, которая обрабатывает IllegalArgumentException и в качестве фоллбека
      * эмитит число -1.
@@ -59,7 +59,6 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4() = sampleRepository.produceNumbers()
-        .onEach { sampleRepository.completed() }
         .catch { throwable ->
             sampleRepository.completed()
 
