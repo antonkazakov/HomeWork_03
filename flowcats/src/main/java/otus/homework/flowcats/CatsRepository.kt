@@ -1,5 +1,6 @@
 package otus.homework.flowcats
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 
@@ -10,9 +11,21 @@ class CatsRepository(
 
     fun listenForCatFacts() = flow {
         while (true) {
-            val latestNews = catsService.getCatFact()
-            emit(latestNews)
+            val result = wrapRequest { catsService.getCatFact() }
+            emit(result)
             delay(refreshIntervalMs)
         }
     }
+
+    private suspend fun <T> wrapRequest(block: suspend () -> T): Result<T> =
+        try {
+            val result = block()
+            Result.Success(result)
+        } catch (e: Exception) {
+            if (e is CancellationException) {
+                throw e
+            }
+            Result.unknownError()
+        }
+
 }
