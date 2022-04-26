@@ -2,6 +2,7 @@ package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import java.lang.Exception
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -20,10 +21,10 @@ class SampleInteractor(
     fun task1(): Flow<String> {
 
         return sampleRepository.produceNumbers()
-            .map { it*5 }
-            .filter{ it > 20 }
-            .filter{ it % 2 == 1 }
-            .map{ "$it won" }
+            .map { it * 5 }
+            .filter { it > 20 }
+            .filter { it % 2 == 1 }
+            .map { "$it won" }
             .take(3)
 
     }
@@ -38,12 +39,14 @@ class SampleInteractor(
     fun task2(): Flow<String> {
         //return flowOf()
         return flow {
-            for (i in sampleRepository.produceNumbers().toList()) {
-                emit(i.toString())
-                if (i % 15 == 0) emit("FizzBuzz")
-                else if (i % 5 == 0) emit("Buzz")
-                    else if (i % 3 == 0) emit("Fizz")
-            }
+              sampleRepository.produceNumbers().collect {
+                  emit(it.toString())
+                  if(it % 15 == 0) emit("FizzBuzz")
+                  else {
+                    if (it % 5 == 0) emit("Buzz")
+                    else if (it % 3 == 0) emit("Fizz")
+                 }
+              }
         }
     }
 
@@ -54,8 +57,8 @@ class SampleInteractor(
      */
     fun task3(): Flow<Pair<String, String>> {
 
-        return sampleRepository.produceColors().zip(sampleRepository.produceForms()) {
-                i, s ->  Pair(i, s)
+        return sampleRepository.produceColors().zip(sampleRepository.produceForms()) { i, s ->
+            Pair(i, s)
         }
     }
 
@@ -66,7 +69,22 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        //return flowOf()
-        return sampleRepository.produceNumbers()
+
+        return flow {
+
+        try {
+                sampleRepository.produceNumbers().collect { emit(it) }
+                sampleRepository.completed()
+            }
+            catch ( e: IllegalArgumentException){
+                sampleRepository.completed()
+                emit(-1)
+            }
+            catch ( e: Exception){
+                sampleRepository.completed()
+                throw e
+            }
+        }
+
     }
 }

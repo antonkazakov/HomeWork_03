@@ -23,14 +23,15 @@ class MainActivity : AppCompatActivity() {
 //            view.populate(it)
 //        }
 
-        lifecycleScope.launch {
+        lifecycleScope.launchWhenStarted {
             // repeatOnLifecycle launches the block in a new coroutine every time the
             // lifecycle is in the STARTED state (or above) and cancels it when it's STOPPED.
+
             //repeatOnLifecycle(Lifecycle.State.STARTED) {
                 catsViewModel.uiState.collect() {
                     when(it){
                         is Success -> view.populate(it.item)
-                        is Error -> it.message?.let { it1 -> view.toast(it1) }
+                        is Error -> view.toast(it.message!!)
                     }
                 }
 
