@@ -25,8 +25,8 @@ class CatsViewModel(
             withContext(Dispatchers.Main) {
                 catsRepository.listenForCatFacts().collect {
                     when(it) {
-                        is Fact -> _uiState.value = Success(it as Fact)
-                        is Exception -> _uiState.value = it.message?.let { it1 -> ErrorCat(it1) }!!
+                        is Fact -> _uiState.value = Success(it)
+                        is Error -> _uiState.value = it
                     }
                     //_catsLiveData.value = it
                 }
@@ -44,5 +44,5 @@ class CatsViewModelFactory(private val catsRepository: CatsRepository) :
 
 sealed class State()
 object Initial: State()
-data class Success(val item: Fact) : State()
-class ErrorCat(val message: String) : State()
+class Success<T>(val data: T) : State()
+class Error() : State()

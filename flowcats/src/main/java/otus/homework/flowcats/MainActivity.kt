@@ -27,11 +27,11 @@ class MainActivity : AppCompatActivity() {
             // repeatOnLifecycle launches the block in a new coroutine every time the
             // lifecycle is in the STARTED state (or above) and cancels it when it's STOPPED.
 
-            //repeatOnLifecycle(Lifecycle.State.STARTED) {
+            //repeatOnLifecycle(Lifecycle.State.STARTED) { //only for ktx:2.4.0 above
                 catsViewModel.uiState.collect() {
                     when(it){
-                        is Success -> view.populate(it.item)
-                        is Error -> view.toast(it.message!!)
+                        is Success<*> -> view.populate(it.data as Fact)
+                        is Error -> view.errorCat()
                     }
                 }
 

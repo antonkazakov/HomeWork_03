@@ -2,6 +2,7 @@ package otus.homework.flowcats
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import java.lang.Error
 import java.lang.Exception
 
 class CatsRepository(
@@ -17,7 +18,7 @@ class CatsRepository(
                 delay(refreshIntervalMs)
             }
             catch (error: Exception){
-                emit(error)
+                emit(Error())
             }
         }
     }
