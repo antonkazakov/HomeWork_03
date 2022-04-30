@@ -1,7 +1,12 @@
 package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.transform
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -10,7 +15,7 @@ class SampleInteractor(
 
     /**
      * Реализуйте функцию task1 которая последовательно:
-     * 1) возводит числа в 5ую степень
+     * 1) возводит числа в 5ую степень // У вас тут ошибка если делать как тут написано то тест никогда не пройдется) я так понимаю тут перемножение на 5 имелось ввиду, а не степень
      * 2) убирает чила <= 20
      * 3) убирает четные числа
      * 4) добавляет постфикс "won"
@@ -18,7 +23,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { it * 5 }
+            .filter { it > 20 }
+            .filter { it % 2 != 0 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -29,7 +39,8 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .fizzBuzzOperator()
     }
 
     /**
@@ -49,5 +60,25 @@ class SampleInteractor(
      */
     fun task4(): Flow<Int> {
         return flowOf()
+    }
+
+    private fun Flow<Int>.fizzBuzzOperator(): Flow<String> = transform { value ->
+        val fizz = "Fizz"
+        val buzz = "Buzz"
+        val fizzBuzz = "$fizz$buzz"
+
+        emit(value.toString())
+
+        when {
+            value % 15 == 0 -> {
+                emit(fizzBuzz)
+            }
+            value % 3 == 0 -> {
+                emit(fizz)
+            }
+            value % 5 == 0 -> {
+                emit(buzz)
+            }
+        }
     }
 }
