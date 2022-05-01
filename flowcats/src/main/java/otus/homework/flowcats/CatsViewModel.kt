@@ -17,7 +17,9 @@ class CatsViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.value = it
+                    withContext(Dispatchers.Main) {
+                        _catsLiveData.value = it
+                    }
                 }
             }
         }
