@@ -2,11 +2,13 @@ package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.zip
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -49,7 +51,12 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        val colorsFlow = sampleRepository.produceColors()
+        val formsFlow = sampleRepository.produceForms()
+
+        return colorsFlow.zip(formsFlow) { firstData, secondData ->
+            firstData to secondData
+        }
     }
 
     /**
@@ -59,7 +66,19 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        val defaultValue = -1
+
+        return sampleRepository.produceNumbers()
+            .catch { exception ->
+                if (exception is IllegalArgumentException) {
+                    emit(defaultValue)
+                } else {
+                    throw exception
+                }
+            }
+            .onCompletion {
+                sampleRepository.completed()
+            }
     }
 
     private fun Flow<Int>.fizzBuzzOperator(): Flow<String> = transform { value ->
