@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Flow cats</string>
     <string name="loading_state_text">Loading…</string>
-    <string name="error_state_text">Loading...</string>
+    <string name="error_state_text">Default error</string>
 </resources>
