@@ -125,7 +125,6 @@ class SampleInteractorTest {
             runBlockingTest {
                 dotsInteractor.task4().toList()
             }
-
         }
         verify(exactly = 1) { dotsRepository.completed() }
     }
