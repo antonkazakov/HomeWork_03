@@ -37,17 +37,18 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        //return flowOf()
-        return flow {
-              sampleRepository.produceNumbers().collect {
-                  emit(it.toString())
-                  if(it % 15 == 0) emit("FizzBuzz")
-                  else {
-                    if (it % 5 == 0) emit("Buzz")
-                    else if (it % 3 == 0) emit("Fizz")
-                 }
-              }
-        }
+
+        return sampleRepository.produceNumbers()
+            .transform { it ->
+                emit( it.toString())
+                when {
+                    it % 15 == 0 -> emit("FizzBuzz")
+                    it % 5 == 0 -> emit("Buzz")
+                    it % 3 == 0 -> emit("Fizz")
+                }
+            }
+
+
     }
 
     /**
@@ -70,21 +71,11 @@ class SampleInteractor(
      */
     fun task4(): Flow<Int> {
 
-        return flow {
-
-        try {
-                sampleRepository.produceNumbers().collect { emit(it) }
-                sampleRepository.completed()
+        return sampleRepository.produceNumbers()
+            .catch {
+                if (it is IllegalArgumentException) emit(-1)
+                else throw it
             }
-            catch ( e: IllegalArgumentException){
-                sampleRepository.completed()
-                emit(-1)
-            }
-            catch ( e: Exception){
-                sampleRepository.completed()
-                throw e
-            }
-        }
-
+            .onCompletion { sampleRepository.completed() }
     }
 }

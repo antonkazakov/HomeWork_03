@@ -22,19 +22,17 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.Main) {
-                catsRepository.listenForCatFacts().collect {
+            catsRepository.listenForCatFacts().collect {
                     when(it) {
                         is Fact -> _uiState.value = Success(it)
                         is Error -> _uiState.value = it
                     }
                     //_catsLiveData.value = it
-                }
             }
         }
     }
-
 }
+
 
 class CatsViewModelFactory(private val catsRepository: CatsRepository) :
     ViewModelProvider.NewInstanceFactory() {

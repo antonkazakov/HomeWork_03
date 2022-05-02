@@ -19,10 +19,6 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
 
-//        catsViewModel.catsLiveData.observe(this){
-//            view.populate(it)
-//        }
-
         lifecycleScope.launchWhenStarted {
             // repeatOnLifecycle launches the block in a new coroutine every time the
             // lifecycle is in the STARTED state (or above) and cancels it when it's STOPPED.
