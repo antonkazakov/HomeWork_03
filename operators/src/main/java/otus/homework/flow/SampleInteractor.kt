@@ -20,10 +20,10 @@ class SampleInteractor(
      */
     fun task1(): Flow<String> {
         return sampleRepository.produceNumbers()
-            .transform { emit(it.toFloat().pow(5)) }
+            .map { it.toFloat().pow(5) }
             .filter { it > 20 }
             .filter { it.toInt() % 2 != 0 }
-            .transform { emit("${it.toInt()} won") }
+            .map { "${it.toInt()} won" }
             .take(3)
     }
 
@@ -37,20 +37,17 @@ class SampleInteractor(
     fun task2(): Flow<String> {
         return sampleRepository.produceNumbers()
             .transform { number ->
+                emit(number.toString())
                 when {
                     number % 15 == 0 -> {
-                        emit(number.toString())
                         emit("FizzBuzz")
                     }
                     number % 3 == 0 -> {
-                        emit(number.toString())
                         emit("Fizz")
                     }
                     number % 5 == 0 -> {
-                        emit(number.toString())
                         emit("Buzz")
                     }
-                    else -> emit(number.toString())
                 }
             }
     }
@@ -76,7 +73,7 @@ class SampleInteractor(
             .catch { e ->
                 emit(-1)
                 if (e !is IllegalArgumentException) throw e
-                sampleRepository.completed()
             }
+            .onCompletion { sampleRepository.completed() }
     }
 }
