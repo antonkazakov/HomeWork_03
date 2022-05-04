@@ -59,9 +59,8 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4() = sampleRepository.produceNumbers()
+        .onCompletion { sampleRepository.completed() }
         .catch { throwable ->
-            sampleRepository.completed()
-
             when (throwable) {
                 is IllegalArgumentException -> emit(-1)
                 else -> throw throwable

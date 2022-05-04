@@ -121,7 +121,7 @@ class SampleInteractorTest {
             }
         }
 
-        assertThrows(SecurityException::class.java){
+        assertThrows(SecurityException::class.java) {
             runBlockingTest {
                 dotsInteractor.task4().toList()
             }
@@ -129,4 +129,19 @@ class SampleInteractorTest {
         }
         verify(exactly = 1) { dotsRepository.completed() }
     }
+
+
+    @Test
+    fun `task4 should invoke completed if not throw exception`() = runBlockingTest {
+        every { dotsRepository.produceNumbers() } returns flow {
+            (1..10).forEach {
+                emit(it)
+            }
+        }
+
+        dotsInteractor.task4().toList()
+
+        verify(exactly = 1) { dotsRepository.completed() }
+    }
+
 }
