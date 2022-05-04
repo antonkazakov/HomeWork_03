@@ -2,6 +2,7 @@ package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import java.lang.IllegalArgumentException
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -18,7 +19,11 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { it * 5 }
+            .filter { it > 20 && it % 2 == 1 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -29,7 +34,15 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .transform { value ->
+                emit(value.toString())
+                when {
+                    value % 15 == 0 -> emit("FizzBuzz")
+                    value % 5 == 0 -> emit("Buzz")
+                    value % 3 == 0 -> emit("Fizz")
+                }
+            }
     }
 
     /**
@@ -38,7 +51,10 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { color, form ->
+                Pair(color, form)
+            }
     }
 
     /**
@@ -48,6 +64,13 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .catch { e ->
+                if (e !is IllegalArgumentException) {
+                    throw e
+                }
+                emit(-1)
+            }
+            .onCompletion { sampleRepository.completed() }
     }
 }
