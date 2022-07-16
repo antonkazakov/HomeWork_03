@@ -18,7 +18,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { it*5 }
+            .filter { it > 20 }
+            .filter { it % 2 != 0 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -48,6 +53,15 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .catch { throwable ->
+                when (throwable) {
+                    is IllegalArgumentException -> {
+                        emit(-1)
+                    }
+                    else -> throw throwable
+                }
+            }
+            .onCompletion { sampleRepository.completed() }
     }
 }
