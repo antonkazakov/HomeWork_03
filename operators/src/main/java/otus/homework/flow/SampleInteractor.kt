@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.zip
@@ -44,17 +43,17 @@ class SampleInteractor(
   fun task2(): Flow<String> {
     return sampleRepository.produceNumbers()
       .transform { number ->
-        if (number % 15 == 0) {
-          emit(number.toString())
-          emit("FizzBuzz")
-        } else if (number % 3 == 0) {
-          emit(number.toString())
-          emit("Fizz")
-        } else if (number % 5 == 0) {
-          emit(number.toString())
-          emit("Buzz")
-        } else {
-          emit(number.toString())
+        emit(number.toString())
+        when {
+          number % 15 == 0 -> {
+            emit("FizzBuzz")
+          }
+          number % 3 == 0 -> {
+            emit("Fizz")
+          }
+          number % 5 == 0 -> {
+            emit("Buzz")
+          }
         }
       }
   }
