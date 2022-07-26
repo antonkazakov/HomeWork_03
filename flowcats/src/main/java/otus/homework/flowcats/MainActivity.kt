@@ -25,9 +25,8 @@ class MainActivity : AppCompatActivity() {
 
         coroutineScope.launch {
             catsViewModel.getCatsFact().filter { it != null }.collect {
-                withContext(Dispatchers.Main){
-                    view.populate(it!!)
-                }
+                if(it is Result.Success)
+                view.populate(it.data!!)
             }
         }
 

@@ -12,7 +12,11 @@ class CatsViewModel(
 ) : ViewModel() {
 
 
-    suspend fun getCatsFact() = catsRepository.listenForCatFacts()
+    suspend fun getCatsFact() = catsRepository.listenForCatFacts().stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        null
+    )
 
 }
 
