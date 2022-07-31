@@ -34,8 +34,30 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .transform { value ->
+                when {
+                    value isDividedBy 15 -> {
+                        emit(value.toString())
+                        emit("FizzBuzz")
+                    }
+                    value isDividedBy 3 -> {
+                        emit(value.toString())
+                        emit("Fizz")
+                    }
+                    value isDividedBy 5 -> {
+                        emit(value.toString())
+                        emit("Buzz")
+                    }
+                    else -> emit(value.toString())
+                }
+            }
     }
+
+    private infix fun Int.isDividedBy(divider: Int): Boolean {
+        return this % divider == 0
+    }
+
 
     /**
      * Реализуйте функцию task3, которая объединяет эмиты из двух flow и возвращает кортеж Pair<String,String>(f1,f2),
