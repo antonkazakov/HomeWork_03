@@ -58,14 +58,16 @@ class SampleInteractor(
         return this % divider == 0
     }
 
-
     /**
      * Реализуйте функцию task3, которая объединяет эмиты из двух flow и возвращает кортеж Pair<String,String>(f1,f2),
      * где f1 айтем из первого флоу, f2 айтем из второго флоу.
-     * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
+     * Если айтемы в одном из флоу кончились, то результирующий флоу также должен закончиться
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { i, j ->
+                i to j
+            }
     }
 
     /**
