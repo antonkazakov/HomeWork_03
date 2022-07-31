@@ -21,17 +21,3 @@ class CatsRepository(
         emit(Result.Error(e.message ?: "Error"))
     }
 }
-
-/*
-* Fact(
-                createdAt = "123",
-                deleted = false,
-                id = "123",
-                text = Random.nextInt().toString(),
-                source = "123",
-                used = false,
-                type = "123",
-                user = "123",
-                updatedAt = "123"
-            )
-* */
