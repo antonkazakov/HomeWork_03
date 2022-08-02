@@ -21,17 +21,15 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository
-                    .listenForCatFacts()
-                    .catch { throwable ->
-                        Log.e("CatsViewModel", "Exception: ${throwable.message}")
-                        _uiState.emit(Error(throwable.message ?: throwable.toString()))
-                    }
-                    .collect {
-                        _uiState.emit(Success(it))
-                    }
-            }
+            catsRepository
+                .listenForCatFacts()
+                .catch { throwable ->
+                    Log.e("CatsViewModel", "Exception: ${throwable.message}")
+                    _uiState.emit(Error(throwable.message ?: throwable.toString()))
+                }
+                .collect {
+                    _uiState.emit(Success(it))
+                }
         }
     }
 }
