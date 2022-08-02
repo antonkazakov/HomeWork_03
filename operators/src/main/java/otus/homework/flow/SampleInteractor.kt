@@ -34,7 +34,21 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .flatMapConcat { value ->
+                flow {
+                    emit(value.toString())
+                    if ((value % 3 == 0) && (value % 5 == 0)) {
+                        emit("FizzBuzz")
+                    }
+                    else if (value % 3 == 0) {
+                        emit("Fizz")
+                    }
+                    else if (value % 5 == 0) {
+                        emit("Buzz")
+                    }
+                }
+            }
     }
 
     /**
@@ -43,7 +57,10 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { f1, f2 ->
+                Pair(f1, f2)
+            }
     }
 
     /**
