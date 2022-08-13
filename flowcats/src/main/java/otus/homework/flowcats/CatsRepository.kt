@@ -8,7 +8,7 @@ class CatsRepository(
     private val refreshIntervalMs: Long = 5000
 ) {
 
-    fun listenForCatFacts() = flow {
+    suspend fun listenForCatFacts() = flow {
         while (true) {
             val latestNews = catsService.getCatFact()
             emit(latestNews)
