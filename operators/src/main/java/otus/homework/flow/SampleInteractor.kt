@@ -18,7 +18,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { it * 5 }
+            .filterNot { it <= 20 }
+            .filterNot { it % 2 == 0 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -29,16 +34,40 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .transform { value ->
+                when {
+                    value isDividedBy 15 -> {
+                        emit(value.toString())
+                        emit("FizzBuzz")
+                    }
+                    value isDividedBy 3 -> {
+                        emit(value.toString())
+                        emit("Fizz")
+                    }
+                    value isDividedBy 5 -> {
+                        emit(value.toString())
+                        emit("Buzz")
+                    }
+                    else -> emit(value.toString())
+                }
+            }
+    }
+
+    private infix fun Int.isDividedBy(divider: Int): Boolean {
+        return this % divider == 0
     }
 
     /**
      * Реализуйте функцию task3, которая объединяет эмиты из двух flow и возвращает кортеж Pair<String,String>(f1,f2),
      * где f1 айтем из первого флоу, f2 айтем из второго флоу.
-     * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
+     * Если айтемы в одном из флоу кончились, то результирующий флоу также должен закончиться
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { i, j ->
+                i to j
+            }
     }
 
     /**
@@ -48,6 +77,14 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .catch { e ->
+                when (e) {
+                    is IllegalArgumentException -> emit(-1)
+                    else -> throw e
+                }
+            }.onCompletion {
+                sampleRepository.completed()
+            }
     }
 }
