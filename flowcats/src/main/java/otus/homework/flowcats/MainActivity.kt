@@ -3,6 +3,7 @@ package otus.homework.flowcats
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
 
-        coroutineScope.launch {
+        lifecycleScope.launch {
             catsViewModel.getCatsFact().filter { it != null }.collect {
                 if(it is Result.Success)
                 view.populate(it.data!!)

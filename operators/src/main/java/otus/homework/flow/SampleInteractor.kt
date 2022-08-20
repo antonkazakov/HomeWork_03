@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.*
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
-    private val sampleRepository: SampleRepository
+    private val sampleRepository: SampleRepository,
 ) {
 
     /**
@@ -18,7 +18,7 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf(7, 12, 4, 8, 11, 5, 7, 16, 99, 1)
+        return sampleRepository.produceNumbers()
             .map {
                 it * 5
             }.filter {
@@ -39,21 +39,23 @@ class SampleInteractor(
      */
     fun task2(): Flow<String> {
         return (1..21).asFlow().transform {
-
-            if (it % 15 == 0) {
-                emit(it.toString())
-                emit("FizzBuzz")
-            } else
-                if (it % 5 == 0) {
+            when {
+                it % 15 == 0 -> {
+                    emit(it.toString())
+                    emit("FizzBuzz")
+                }
+                it % 5 == 0 -> {
                     emit(it.toString())
                     emit("Buzz")
-                } else
-                    if (it % 3 == 0) {
-                        emit(it.toString())
-                        emit("Fizz")
-                    } else {
-                        emit(it.toString())
-                    }
+                }
+                it % 3 == 0 -> {
+                    emit(it.toString())
+                    emit("Fizz")
+                }
+                else -> {
+                    emit(it.toString())
+                }
+            }
         }
     }
 
@@ -83,25 +85,15 @@ class SampleInteractor(
      */
     fun task4(): Flow<Int> {
 
-        return  flow {
-            (1..10).forEach {
-                if (it == 5) {
-                    throw IllegalArgumentException("Failed")
-                } else {
-                    emit(it)
-                    sampleRepository.completed()
+        return sampleRepository.produceNumbers()
+            .onCompletion { sampleRepository.completed() }
+            .catch { throwable ->
+                when (throwable) {
+                    is IllegalArgumentException -> emit(-1)
+                    else -> throw throwable
                 }
             }
-        }.catch {
-            if(it is Exception){
-                sampleRepository.completed()
-                if(it is IllegalArgumentException){
-                    emit(-1)
-                } else {
-                   it
-                }
-            }
-        }
-
     }
+
+
 }

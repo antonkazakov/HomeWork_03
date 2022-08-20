@@ -11,17 +11,15 @@ class CatsRepository(
     private val refreshIntervalMs: Long = 5000
 ) {
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
     suspend fun listenForCatFacts(): Flow<Result> {
-        return flow {
+        return flow<Result> {
             while (true) {
                 val latestNews = catsService.getCatFact()
                 Log.d("TEST", latestNews.text)
                 emit(Result.Success(latestNews))
                 delay(refreshIntervalMs)
             }
-        }.catch {
+        }.flowOn(Dispatchers.IO).catch {
             flow { emit(Result.Error("Error")) }
         }
     }
