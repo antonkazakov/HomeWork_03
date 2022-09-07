@@ -17,7 +17,10 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launchWhenCreated {
             catsViewModel.catsStateFlow.collect {
-                view.populate(it?.text ?: "")
+                when (it) {
+                    is Result.Success<Fact> -> view.populate(it.data.text)
+                    is Result.Error -> view.showToast(it.messageText)
+                }
             }
         }
     }
