@@ -1,27 +1,25 @@
 package otus.homework.flowcats
 
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsStateFlow = MutableStateFlow<Fact?>(null)
-    val catsStateFlow: StateFlow<Fact?> = _catsStateFlow
+    private val _catsStateFlow = MutableStateFlow<Result<Fact?>>(Result.Success(null))
+    val catsStateFlow: StateFlow<Result<Fact?>> = _catsStateFlow
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect {
-                    _catsStateFlow.value = it
-                }
-            }
+            catsRepository.listenForCatFacts()
+                .flowOn(Dispatchers.IO)
+                .catch { exception -> _catsStateFlow.value = Result.Error(exception.message ?: "") }
+                .collect { _catsStateFlow.value = Result.Success(it) }
         }
     }
 }
