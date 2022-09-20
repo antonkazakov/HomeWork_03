@@ -12,14 +12,17 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsStateFlow = MutableStateFlow<Fact?>(null)
-    val catsStateFlow: StateFlow<Fact?> = _catsStateFlow
+    private val _catsStateFlow = MutableStateFlow<Result<Any>>(Result.Loading)
+    val catsStateFlow: StateFlow<Result<Any>> = _catsStateFlow
 
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts().collect {
-                    _catsStateFlow.value = it
+                    when (it) {
+                        is Fact -> _catsStateFlow.value = Result.Success(it)
+                        is Exception -> _catsStateFlow.value = Result.Error(it)
+                    }
                 }
             }
         }

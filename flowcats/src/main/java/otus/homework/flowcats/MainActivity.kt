@@ -18,8 +18,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         lifecycleScope.launch {
-            catsViewModel.catsStateFlow.collect { fact ->
-                view.populate(fact?.text ?: getString(R.string.empty_cat_fact))
+            catsViewModel.catsStateFlow.collect { state ->
+                when (state) {
+                    is Result.Success -> view.populate(
+                        (state.data as? Fact)?.text ?: getString(R.string.empty_cat_fact)
+                    )
+                    is Result.Loading -> view.showLoading()
+                    is Result.Error -> view.showError(
+                        state.error.message ?: getString(R.string.unknown_error_message)
+                    )
+                }
             }
         }
     }
