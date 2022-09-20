@@ -1,24 +1,25 @@
 package otus.homework.flowcats
 
 import androidx.lifecycle.*
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableLiveData<Fact>()
-    val catsLiveData: LiveData<Fact> = _catsLiveData
+    private val _catsState = MutableStateFlow<CatResult>(CatInit("loading..."))
+    val catsState: StateFlow<CatResult> = _catsState
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.value = it
-                }
+            catsRepository.listenForCatFacts().catch {
+                _catsState.emit(CatError("Ошибка загрузки"))
+            }.collect {
+                _catsState.emit(CatSuccess(it))
             }
         }
     }
@@ -29,3 +30,8 @@ class CatsViewModelFactory(private val catsRepository: CatsRepository) :
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
         CatsViewModel(catsRepository) as T
 }
+
+sealed class CatResult
+data class CatError(var errorTxt: String) : CatResult()
+data class CatSuccess(var fact: Fact) : CatResult()
+data class CatInit(var txt: String) : CatResult()
