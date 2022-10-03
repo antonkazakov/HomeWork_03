@@ -19,17 +19,15 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts()
-                    .catch { exception ->
-                        val errorResult = Result.Error(exception.message ?: "Unknown error")
-                        _catsStateFlowData.value = errorResult
-                    }
-                    .collect { fact ->
-                        val successResult = Result.Success(fact)
-                        _catsStateFlowData.value = successResult
-                    }
-            }
+            catsRepository.listenForCatFacts()
+                .catch { exception ->
+                    val errorResult = Result.Error(exception.message ?: "Unknown error")
+                    _catsStateFlowData.value = errorResult
+                }
+                .collect { fact ->
+                    val successResult = Result.Success(fact)
+                    _catsStateFlowData.value = successResult
+                }
         }
     }
 }
