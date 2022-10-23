@@ -3,6 +3,9 @@ package otus.homework.flowcats
 import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
@@ -12,18 +15,18 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableLiveData<Fact>()
-    val catsLiveData: LiveData<Fact> = _catsLiveData
+    private val _catsStateFlow = MutableStateFlow<Result>(Result.Empty)
+    val catsStateFlow: StateFlow<Result> = _catsStateFlow.asStateFlow()
 
     init {
         viewModelScope.launch {
             catsRepository.listenForCatFacts()
                 .flowOn(Dispatchers.IO)
                 .catch {
-                    Log.e("MainViewModel", "${it.printStackTrace()}")
+                    _catsStateFlow.value = Result.Error(it.stackTraceToString())
                 }
                 .collect {
-                    _catsLiveData.value = it // Cannot invoke setValue on a background thread
+                    _catsStateFlow.value = Result.Success(it)
                 }
         }
     }
