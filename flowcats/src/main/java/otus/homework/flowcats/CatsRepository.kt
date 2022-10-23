@@ -2,6 +2,7 @@ package otus.homework.flowcats
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import java.net.SocketTimeoutException
 
 class CatsRepository(
     private val catsService: CatsService,
@@ -10,9 +11,13 @@ class CatsRepository(
 
     fun listenForCatFacts() = flow {
         while (true) {
-            val latestNews = catsService.getCatFact()
-            emit(latestNews)
-            delay(refreshIntervalMs)
+            try {
+                val latestNews = catsService.getCatFact()
+                emit(Result.Success(latestNews))
+                delay(refreshIntervalMs)
+            } catch (ste: SocketTimeoutException) {
+                emit(Result.Error(ste.message ?: ""))
+            }
         }
     }
 }
