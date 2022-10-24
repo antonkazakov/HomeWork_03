@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity() {
                         updateUi(it.data)
                     }
                     is Result.Error -> {
-                        // showError
+                        showError(it.message)
                     }
                 }
             }
@@ -46,5 +47,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateUi(fact: Fact) {
         view.populate(fact)
+    }
+
+    private fun showError(msg: String) {
+        Snackbar.make(view, msg, Snackbar.LENGTH_INDEFINITE).setAction("DISMISS") {
+        }.show()
     }
 }

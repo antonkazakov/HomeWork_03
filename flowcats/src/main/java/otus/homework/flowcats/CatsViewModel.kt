@@ -26,8 +26,9 @@ class CatsViewModel(
             try {
                 catsRepository.listenForCatFacts()
                     .flowOn(Dispatchers.IO)
-                    .collect { fact ->
-                        _uiState.value = Result.Success(fact)
+                    .retry(3L)
+                    .collect { ResultFact ->
+                        _uiState.value = ResultFact
                     }
             } catch (e: java.net.SocketTimeoutException) {
                 _uiState.value = Result.Error("Не удалось получить ответ от сервера")
