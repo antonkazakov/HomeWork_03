@@ -1,17 +1,16 @@
 package otus.homework.flow
 
+import io.mockk.InternalPlatformDsl.toArray
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
+import java.util.*
 
 
 @ExperimentalCoroutinesApi
@@ -65,8 +64,7 @@ class SampleInteractorTest {
             "20",
             "Buzz",
             "21",
-            "Fizz"
-        )
+            "Fizz")
         val actual = dotsInteractor.task2().toList()
 
         assertEquals(expected, actual)
@@ -84,6 +82,7 @@ class SampleInteractorTest {
         every { dotsRepository.produceForms() } returns flowOf("Circle", "Square", "Triangle")
 
         val expected = listOf("Red" to "Circle", "Green" to "Square", "Blue" to "Triangle")
+
         val actual = dotsInteractor.task3().toList()
 
         assertEquals(expected, actual)
