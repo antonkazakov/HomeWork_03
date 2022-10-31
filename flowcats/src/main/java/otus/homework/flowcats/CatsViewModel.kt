@@ -10,14 +10,14 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableLiveData<Fact>()
-    val catsLiveData: LiveData<Fact> = _catsLiveData
+    private val _catsLiveData = MutableLiveData<CatFact>()
+    val catsLiveData: LiveData<CatFact> = _catsLiveData
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.value = it
+            withContext(Dispatchers.Main) {
+                catsRepository.listenForCatFacts().collect { fact ->
+                    _catsLiveData.value = fact
                 }
             }
         }
