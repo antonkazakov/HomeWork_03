@@ -15,7 +15,7 @@ class CatsView @JvmOverloads constructor(
     override fun populate(fact: Result<Fact>) {
         when (fact) {
             is Result.Success -> {
-                findViewById<TextView>(R.id.fact_textView).text = fact.entity.text
+                findViewById<TextView>(R.id.fact_textView).text = fact.entity.fact
             }
 
             is Result.Error -> {
