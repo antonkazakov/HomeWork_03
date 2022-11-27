@@ -1,10 +1,10 @@
 package otus.homework.flowcats
 
-import androidx.lifecycle.*
-import kotlinx.coroutines.CoroutineExceptionHandler
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class CatsViewModel(
@@ -15,15 +15,15 @@ class CatsViewModel(
     val catsFlow: Flow<Result?> = _catsFlow
 
     init {
-        viewModelScope.launch(
-            CoroutineExceptionHandler { _, throwable ->
-                _catsFlow.tryEmit(Result.Error(throwable))
-            }
-        ) {
+        viewModelScope.launch {
+            try {
                 catsRepository.listenForCatFacts().collect {
                     _catsFlow.value = Result.Success(it)
                 }
+            } catch (e: Exception) {
+                _catsFlow.tryEmit(Result.Error(e))
             }
+        }
     }
 }
 
