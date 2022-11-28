@@ -3,7 +3,7 @@ package otus.homework.flowcats
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.cancel
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import otus.homework.flowcats.handler.Result
@@ -13,7 +13,6 @@ class MainActivity : AppCompatActivity() {
 
     private val diContainer = DiContainer()
     private val catsViewModel by viewModels<CatsViewModel> { CatsViewModelFactory(diContainer.repository) }
-    private val scope = CatsScope()
     private val resultHandler = ResultHandler(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,14 +28,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initFlowCollector(catsView: CatsView) {
-        scope.launch {
+        lifecycleScope.launch {
             catsViewModel.catsDataFlow
                 .collect { result ->
                     resultHandler.onResult(result)
                     when (result) {
-                        is Result.Success -> {
-                            catsView.populate(result.data as Fact)
-                        }
+                        is Result.Success -> catsView.populate(result.data as Fact)
                         is Result.Error -> {}
                     }
                 }
@@ -59,10 +56,5 @@ class MainActivity : AppCompatActivity() {
 
     private fun stopListening() {
         catsViewModel.stopListening()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        scope.cancel()
     }
 }
