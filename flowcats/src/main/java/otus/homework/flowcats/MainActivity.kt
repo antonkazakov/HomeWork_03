@@ -24,14 +24,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeCatFacts(view: CatsView) {
-        catsViewModel
-            .getCatsStateFlow()
-            .filterNotNull()
-            .onEach {
-                when(it){
-                    is Result.Success<*> -> view.populate(it.value as Fact)
-                    is Result.Error -> view.showToast(it.message)
+        lifecycleScope.launchWhenStarted {
+            catsViewModel
+                .getCatsStateFlow()
+                .filterNotNull()
+                .onEach {
+                    when (it) {
+                        is Result.Success<*> -> view.populate(it.value as Fact)
+                        is Result.Error -> view.showToast(it.message)
+                    }
                 }
-            }.launchWhenStarted(lifecycleScope)
+        }
     }
 }

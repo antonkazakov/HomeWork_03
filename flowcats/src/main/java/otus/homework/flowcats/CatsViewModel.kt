@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -19,8 +20,16 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch(getCoroutineExceptionHandler()) {
+            var catFactsFlow: Flow<Fact>? = null
             withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect {
+                try {
+                    catFactsFlow = catsRepository.listenForCatFacts()
+                } catch (e: Exception) {
+                    catsStateFlow.value = e.message?.let { Result.Error(it) }
+                }
+            }
+            withContext(Dispatchers.Main) {
+                catFactsFlow?.collect {
                     catsStateFlow.value = Result.Success(it)
                 }
             }
