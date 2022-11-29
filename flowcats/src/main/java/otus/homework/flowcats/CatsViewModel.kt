@@ -20,7 +20,7 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
                 try {
                     catsRepository.listenForCatFacts().collect {
                         _catsStateFlow.value = Result.Success(it)
