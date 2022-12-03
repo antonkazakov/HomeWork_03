@@ -17,7 +17,6 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts().collect {
                     when (it) {
                         is Resp.Success -> {
@@ -28,7 +27,6 @@ class CatsViewModel(
                         }
                     }
                 }
-            }
         }
     }
 }
