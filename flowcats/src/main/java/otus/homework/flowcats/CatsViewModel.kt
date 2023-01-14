@@ -21,9 +21,13 @@ class CatsViewModel(
     init {
         viewModelScope.launch {
             catsRepository.listenForCatFacts()
-                .flowOn(Dispatchers.IO)
                 .catch {
-                    _catsStateFlow.value = Result.Error(it.stackTraceToString())
+                    emit(
+                        Fact(
+                            fact = "Stream Error",
+                            length = 0
+                        )
+                    )
                 }
                 .collect {
                     _catsStateFlow.value = Result.Success(it)
