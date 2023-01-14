@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
@@ -17,11 +18,11 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class SampleInteractorTest {
 
-    val dotsRepository = mockk<SampleRepository>(relaxed = true)
-    val dotsInteractor = SampleInteractor(dotsRepository)
+    private val dotsRepository = mockk<SampleRepository>(relaxed = true)
+    private val dotsInteractor = SampleInteractor(dotsRepository)
 
     @Test
-    fun `test task1`() = runBlockingTest {
+    fun `test task1`() = runTest {
         every { dotsRepository.produceNumbers() } returns flowOf(7, 12, 4, 8, 11, 5, 7, 16, 99, 1)
 
         val expected = listOf("35 won", "55 won", "25 won")
@@ -31,7 +32,7 @@ class SampleInteractorTest {
     }
 
     @Test
-    fun `test task2`() = runBlockingTest {
+    fun `test task2`() = runTest {
         every { dotsRepository.produceNumbers() } returns (1..21).asFlow()
 
         val expected = listOf(
@@ -73,7 +74,7 @@ class SampleInteractorTest {
     }
 
     @Test
-    fun `test task3`() = runBlockingTest {
+    fun `test task3`() = runTest {
         every { dotsRepository.produceColors() } returns flowOf(
             "Red",
             "Green",
@@ -90,7 +91,7 @@ class SampleInteractorTest {
     }
 
     @Test
-    fun `test task4`() = runBlockingTest {
+    fun `test task4`() = runTest {
         every { dotsRepository.produceNumbers() } returns flow {
             (1..10).forEach {
                 emit(it)
@@ -106,7 +107,7 @@ class SampleInteractorTest {
     }
 
     @Test
-    fun `test task4 with exception`() = runBlockingTest {
+    fun `test task4 with exception`() = runTest {
         every { dotsRepository.produceNumbers() } returns flow {
             (1..10).forEach {
                 if (it == 5) {
@@ -126,7 +127,7 @@ class SampleInteractorTest {
     }
 
     @Test
-    fun `test task4 negative`() = runBlockingTest {
+    fun `test task4 negative`() = runTest {
         every { dotsRepository.produceNumbers() } returns flow {
             (1..10).forEach {
                 if (it == 5) {
@@ -137,8 +138,8 @@ class SampleInteractorTest {
             }
         }
 
-        assertThrows(SecurityException::class.java){
-            runBlockingTest {
+        assertThrows(SecurityException::class.java) {
+            runTest(UnconfinedTestDispatcher()) {
                 dotsInteractor.task4().toList()
             }
 
