@@ -2,6 +2,7 @@ package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import java.lang.IllegalArgumentException
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -55,6 +56,13 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .catch {
+                when (it) {
+                    is IllegalArgumentException -> emit(-1)
+                    else -> throw it
+                }
+                sampleRepository.completed()
+            }
     }
 }
