@@ -34,7 +34,8 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { "" }
     }
 
     /**
@@ -43,7 +44,8 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { color, form -> color to form }
     }
 
     /**
