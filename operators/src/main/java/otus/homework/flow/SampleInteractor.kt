@@ -69,7 +69,7 @@ class SampleInteractor(
                     is IllegalArgumentException -> emit(-1)
                     else -> throw it
                 }
-                sampleRepository.completed()
             }
+            .onCompletion { sampleRepository.completed() }
     }
 }
