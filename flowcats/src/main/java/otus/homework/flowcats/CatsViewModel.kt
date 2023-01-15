@@ -3,9 +3,6 @@ package otus.homework.flowcats
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import otus.homework.flowcats.Result
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
