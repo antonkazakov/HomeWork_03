@@ -2,6 +2,7 @@ package otus.homework.flowcats
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collectLatest
@@ -18,7 +19,11 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launchWhenStarted {
             catsViewModel.catsStateFlow.collectLatest {
-                view.populate(it)
+                when(it) {
+                    is Result.Success -> view.populate(it.fact)
+                    is Result.Error -> Toast.makeText(this@MainActivity, it.message, Toast.LENGTH_LONG).show()
+                    else -> { /*no-op*/ }
+                }
             }
         }
     }
