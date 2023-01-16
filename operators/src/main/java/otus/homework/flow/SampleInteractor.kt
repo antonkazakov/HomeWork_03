@@ -63,6 +63,14 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .catch {throwable ->
+                when (throwable) {
+                    is IllegalArgumentException -> emit(-1)
+                    else -> throw throwable
+                }
+                sampleRepository.completed()
+            }
+
     }
 }
