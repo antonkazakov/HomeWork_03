@@ -53,7 +53,7 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceColors().zip(sampleRepository.produceForms()) { color, form -> color to form }
     }
 
     /**
