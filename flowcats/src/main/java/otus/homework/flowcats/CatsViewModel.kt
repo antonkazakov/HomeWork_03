@@ -16,7 +16,7 @@ class CatsViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.postValue(it)
+                    _catsLiveData.postValue(it)// Bug fix via postValue
                 }
             }
         }
