@@ -3,16 +3,17 @@ package otus.homework.flowcats
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import otus.homework.flowcats.data.Result
+import otus.homework.flowcats.data.Success
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableStateFlow<Fact>(Fact.createMock())
+    private val _catsLiveData = MutableStateFlow<Result>(Success(Fact.createMock()))
     val catsLiveData = _catsLiveData.asStateFlow()
 
     init {
