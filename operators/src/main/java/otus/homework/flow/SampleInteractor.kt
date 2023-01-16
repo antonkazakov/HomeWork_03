@@ -20,7 +20,7 @@ class SampleInteractor(
      */
     fun task1(): Flow<String> {
         return sampleRepository.produceNumbers()
-            .map { it*5 }
+            .map { it * 5 }
             .filter { it > 20 }
             .filter { it % 2 != 0 }
             .map { "$it won" }
@@ -36,8 +36,16 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers().transform { value ->
+            emit(value.toString())
+            when {
+                value % 15 == 0 -> emit("FizzBuzz")
+                value % 3 == 0 -> emit("Fizz")
+                value % 5 == 0 -> emit("Buzz")
+            }
+        }
     }
+
 
     /**
      * Реализуйте функцию task3, которая объединяет эмиты из двух flow и возвращает кортеж Pair<String,String>(f1,f2),
