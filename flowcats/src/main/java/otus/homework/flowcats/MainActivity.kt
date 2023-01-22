@@ -13,7 +13,6 @@ class MainActivity : AppCompatActivity() {
     private val diContainer = DiContainer()
     private val catsViewModel by viewModels<CatsViewModel> { CatsViewModelFactory(diContainer.repository) }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView

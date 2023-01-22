@@ -1,34 +1,41 @@
 package otus.homework.flowcats
 
 import androidx.lifecycle.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
     private val emptyFact = Fact("", false, "", "There is no message received ", "", "", "")
+    private val refreshIntervalMs: Long = 5000
     private val _catsInputFlow = MutableStateFlow(emptyFact)
     val catsInputFlow: StateFlow<Fact> = _catsInputFlow
     private val _catsOutputFlow = MutableStateFlow(emptyFact)
-    val catsOutputFlow = _catsOutputFlow.asSharedFlow()
+    val catsOutputFlow = _catsOutputFlow.asStateFlow()
+
+    companion object {
+        private const val TAG = "CatsViewModel"
+    }
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 catsRepository.listenForCatFacts().collect {
-                    _catsInputFlow.value = it
+                    when (it) {
+                        is Result.Success -> {
+                            _catsInputFlow.value = it.result
+                        }
+                        is Result.Error -> {
+                            CrashMonitor.trackWarning(TAG, it.errorMessage)
+                            _catsInputFlow.value = emptyFact.copy(text = it.errorMessage) }
+                    }
                     _catsOutputFlow.value = catsInputFlow.value
+                    delay(refreshIntervalMs)
                 }
             }
         }
-
     }
 }
 
