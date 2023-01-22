@@ -23,13 +23,13 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 catsViewModel.catsFlow.collect{
-                    it?.let {
-                    when(it){
-                        is Result.Success -> {view.populate(it.fact)}
-                        is Result.Error -> {
-                            Toast.makeText(this@MainActivity, it.message, Toast.LENGTH_SHORT).show()
+                    it.let {
+                        when(it){
+                            is Result.Success -> {view.populate(it.fact)}
+                            is Result.Error -> {
+                                Toast.makeText(this@MainActivity, it.message, Toast.LENGTH_SHORT).show()
+                            }
                         }
-                    }
 
                     }
                 }

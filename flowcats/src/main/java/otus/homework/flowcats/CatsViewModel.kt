@@ -22,12 +22,8 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().catch {
-                    _catsFlow.emit(Result.Error(it.message ?: "Неизвестная ошибка"))
-                } .collect {
-                    _catsFlow.emit(Result.Success(it))
-                }
+            catsRepository.listenForCatFacts().collect {
+                _catsFlow.emit(it)
             }
         }
     }
