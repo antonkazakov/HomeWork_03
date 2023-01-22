@@ -1,14 +1,12 @@
 package otus.homework.flowcats
 
 import androidx.lifecycle.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
     val catsState = catsRepository.listenForCatFacts()
-        .flowOn(Dispatchers.IO)
         .map { Result.Success(it) }
         .catch<Result<Fact>> {
             emit(Result.Error(it))
