@@ -64,13 +64,14 @@ class SampleInteractor(
      */
     fun task4(): Flow<Int> {
         return sampleRepository.produceNumbers()
+            .onEach {
+                sampleRepository.completed()
+            }
             .catch {throwable ->
                 when (throwable) {
                     is IllegalArgumentException -> emit(-1)
                     else -> throw throwable
                 }
-                sampleRepository.completed()
             }
-
     }
 }

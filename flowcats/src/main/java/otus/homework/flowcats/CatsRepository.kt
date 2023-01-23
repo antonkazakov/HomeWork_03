@@ -1,8 +1,10 @@
 package otus.homework.flowcats
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import otus.homework.flowcats.data.CatsError
 import otus.homework.flowcats.data.Result
 import otus.homework.flowcats.data.Success
@@ -19,7 +21,5 @@ class CatsRepository(
             //Если есть хорошая практика - напишите мне пожалуйста
             delay(refreshIntervalMs)
         }
-    }.catch { exception ->
-        emit(CatsError(exception))
-    }
+    }.flowOn(Dispatchers.IO)
 }

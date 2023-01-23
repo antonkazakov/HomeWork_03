@@ -1,5 +1,6 @@
 package otus.homework.flowcats
 
+import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,10 +19,12 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.Main) {
+            try {
                 catsRepository.listenForCatFacts().collect {
                     _catsLiveData.value = it// Bug fix via by Dispatchers.Main
                 }
+            } catch(throwable:Throwable){
+                Log.d("CatsViewModel","init -> $throwable ")
             }
         }
     }
