@@ -32,7 +32,7 @@ class SampleInteractorTest {
 
     @Test
     fun `test task2`() = runBlockingTest {
-        every { dotsRepository.produceNumbers() } returns (1..21).asFlow()
+        every { dotsRepository.produceNumbers() } returns (1 ..21).asFlow()
 
         val expected = listOf(
             "1",

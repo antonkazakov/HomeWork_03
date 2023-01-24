@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.flow
 
 class CatsRepository(
     private val catsService: CatsService,
-    private val refreshIntervalMs: Long = 5000
+    private val refreshIntervalMs: Long = 5000,
 ) {
 
     fun listenForCatFacts() = flow {
