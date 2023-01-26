@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
@@ -15,9 +16,11 @@ class CatsViewModel(
     val catStateFlow: StateFlow<Fact?> = _catsStateFlow
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch() {
             catsRepository.listenForCatFacts().collect {
-                _catsStateFlow.value = it.model as? Fact
+                withContext(Dispatchers.IO) {
+                    _catsStateFlow.value = it.model as? Fact
+                }
             }
         }
     }

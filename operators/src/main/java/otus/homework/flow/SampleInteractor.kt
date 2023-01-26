@@ -81,17 +81,14 @@ class SampleInteractor(
      */
     suspend fun task4(): Flow<Int> {
         val resultList: MutableList<Int> = mutableListOf()
-        try {
-            sampleRepository.produceNumbers().collect {
-                resultList.add(it)
-            }
-        } catch (e: Exception) {
-            if (e is IllegalArgumentException)
-                resultList.add(-1)
-            else
-                throw e
-        } finally {
+
+        sampleRepository.produceNumbers().catch { e ->
+            if (e is IllegalArgumentException) resultList.add(-1)
+            else throw e
+        }.onCompletion {
             sampleRepository.completed()
+        }.collect {
+            resultList.add(it)
         }
         return flowOf(*resultList.toTypedArray())
     }
