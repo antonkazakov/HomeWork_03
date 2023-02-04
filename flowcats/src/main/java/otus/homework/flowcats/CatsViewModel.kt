@@ -3,6 +3,7 @@ package otus.homework.flowcats
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,13 +25,20 @@ class CatsViewModel(
     init {
         viewModelScope.launch {
             try {
-                withContext(Dispatchers.IO) {
-                    catsRepository.listenForCatFacts().collect {
+                catsRepository.listenForCatFacts().collect {
+                    withContext(Dispatchers.IO) {
                         _result.value = Result.Success(it)
                     }
                 }
             } catch (throwable: Throwable) {
-                _result.value = Result.Error(throwable)
+                when (throwable) {
+                    is CancellationException -> {
+                        throw throwable
+                    }
+                    else -> {
+                        _result.value = Result.Error(throwable)
+                    }
+                }
             }
         }
     }
