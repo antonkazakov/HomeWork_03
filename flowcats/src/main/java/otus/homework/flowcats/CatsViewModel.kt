@@ -8,20 +8,20 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val emptyFact = Fact("", false, "", "There is no message received ", "", "", "")
-    private val refreshIntervalMs: Long = 5000
-    private val _catsInputFlow = MutableStateFlow(emptyFact)
+
+    private val _catsInputFlow = MutableStateFlow(EMPTY_FACT)
     val catsInputFlow: StateFlow<Fact> = _catsInputFlow
-    private val _catsOutputFlow = MutableStateFlow(emptyFact)
-    val catsOutputFlow = _catsOutputFlow.asStateFlow()
 
     companion object {
         private const val TAG = "CatsViewModel"
+        private val EMPTY_FACT = Fact("", false, "",
+                        "There is no message received ", "", "", "")
+        private val REFRESH_INTERVAL_MS: Long = 5000
     }
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.Main) {
+            withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts().collect {
                     when (it) {
                         is Result.Success -> {
@@ -29,10 +29,9 @@ class CatsViewModel(
                         }
                         is Result.Error -> {
                             CrashMonitor.trackWarning(TAG, it.errorMessage)
-                            _catsInputFlow.value = emptyFact.copy(text = it.errorMessage) }
+                            _catsInputFlow.value = EMPTY_FACT.copy(text = it.errorMessage) }
                     }
-                    _catsOutputFlow.value = catsInputFlow.value
-                    delay(refreshIntervalMs)
+                    delay(REFRESH_INTERVAL_MS)
                 }
             }
         }
