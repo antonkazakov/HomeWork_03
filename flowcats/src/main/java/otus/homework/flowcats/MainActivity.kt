@@ -21,19 +21,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         //LiveData
-        catsViewModel.catsLiveData.observe(this){
-            view.populate(it)
-        }
+//        catsViewModel.catsLiveData.observe(this){
+//            view.populate(it)
+//        }
 
         //StateFlow
-//        lifecycleScope.launch {
-//            catsStateFlowViewModel.catsStateFlow.collect { catsStateFlow ->
-//                when (catsStateFlow) {
-//                    is Result.Success -> view.populate(catsStateFlow.data)
-//                    is Result.Error -> Log.i("catsStateFlow", "error ${catsStateFlow.exception}")
-//                }
-//
-//            }
-//        }
+        lifecycleScope.launch {
+            catsStateFlowViewModel.catsStateFlow.collect { catsStateFlow ->
+                when (catsStateFlow) {
+                    is Result.Success -> view.populate(catsStateFlow.data)
+                    is Result.Error -> Log.i("catsStateFlow", "error ${catsStateFlow.exception}")
+                }
+
+            }
+        }
     }
 }
