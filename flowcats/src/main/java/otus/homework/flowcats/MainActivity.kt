@@ -2,7 +2,9 @@ package otus.homework.flowcats
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
+import kotlinx.coroutines.flow.filterNotNull
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,8 +16,11 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
 
-        catsViewModel.catsLiveData.observe(this){
-            view.populate(it)
+        catsViewModel.catsFlow.filterNotNull().observe(this) {
+            when(it) {
+                is Result.Error -> Log.e("TAG", "error", it.error)
+                is Result.Success<Fact> ->  view.populate(it.res)
+            }
         }
     }
 }
