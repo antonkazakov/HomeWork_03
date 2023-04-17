@@ -14,9 +14,18 @@ class CatsView @JvmOverloads constructor(
     override fun populate(fact: Fact) {
         findViewById<TextView>(R.id.fact_textView).text = fact.text
     }
+
+    override fun showError(message: String?) {
+        findViewById<TextView>(R.id.fact_textView).apply {
+            text = message
+            setTextColor(resources.getColor(R.color.purple_700))
+        }
+    }
 }
 
 interface ICatsView {
 
     fun populate(fact: Fact)
+
+    fun showError(message:String?)
 }
