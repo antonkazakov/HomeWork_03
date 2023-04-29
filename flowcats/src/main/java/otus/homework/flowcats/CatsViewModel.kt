@@ -14,9 +14,9 @@ class CatsViewModel(
     val catsLiveData: LiveData<Fact> = _catsLiveData
 
     init {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect {
+        viewModelScope.launch(Dispatchers.IO) {
+            catsRepository.listenForCatFacts().collect {
+                withContext(Dispatchers.Main) {
                     _catsLiveData.postValue(it)
                 }
             }

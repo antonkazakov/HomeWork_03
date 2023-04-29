@@ -17,16 +17,17 @@ class CatsStateFlowViewModel(
 
     init {
 
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                try {
-                    catsRepository.listenForCatFacts().collect {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                catsRepository.listenForCatFacts().collect {
+                    withContext(Dispatchers.Main) {
                         _catsStateFlow.value = Result.Success(it)
                     }
-                } catch (e: Exception) {
-                    _catsStateFlow.value = Result.Error(e.message.toString())
                 }
+            } catch (e: Exception) {
+                _catsStateFlow.value = Result.Error(e.message.toString())
             }
+//            }
         }
     }
 }
