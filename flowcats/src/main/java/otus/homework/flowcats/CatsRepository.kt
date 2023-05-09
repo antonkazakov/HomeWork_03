@@ -1,5 +1,6 @@
 package otus.homework.flowcats
 
+import java.lang.Exception
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -12,11 +13,18 @@ class CatsRepository(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
-    fun listenForCatFacts() = flow {
+    // Думаю можно обернуть в flow.retry или добавить flow.retryWhen для вывода exception,
+    // что бы было по красоте
+    fun listenForCatFacts() = flow<Result<Fact>> {
         while (true) {
-            val latestNews = catsService.getCatFact()
-            emit(latestNews)
-            delay(refreshIntervalMs)
+            try {
+                val latestNews = catsService.getCatFact()
+                emit(Result.Success(latestNews))
+            } catch (e: Exception) {
+                emit(Result.Error(e))
+            } finally {
+                delay(refreshIntervalMs)
+            }
         }
     }.flowOn(ioDispatcher)
 }
