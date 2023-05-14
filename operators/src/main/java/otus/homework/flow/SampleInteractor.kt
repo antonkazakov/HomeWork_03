@@ -44,20 +44,18 @@ class SampleInteractor(
     suspend fun task2(): Flow<String> {
         return flow {
             sampleRepository.produceNumbers().collect {
+                emit(it.toString())
                 when {
                     (it.mod(15) == 0) -> {
-                        emit(it.toString())
                         emit("FizzBuzz")
                     }
                     (it.mod(5) == 0) -> {
-                        emit(it.toString())
                         emit("Buzz")
                     }
                     (it.mod(3) == 0) -> {
-                        emit(it.toString())
                         emit("Fizz")
                     }
-                    else -> emit(it.toString())
+                    else -> {}
                 }
             }
         }

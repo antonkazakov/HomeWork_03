@@ -1,8 +1,9 @@
 package otus.homework.flowcats
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import otus.homework.flowcats.Result
+import kotlinx.coroutines.flow.flowOn
 
 class CatsRepository(
     private val catsService: CatsService,
@@ -11,13 +12,8 @@ class CatsRepository(
 
     fun listenForCatFacts() = flow {
         while (true) {
-            try {
-                val latestNews = catsService.getCatFact()
-                emit(Result.Success(latestNews))
-                delay(refreshIntervalMs)
-            } catch (e:Exception){
-                emit(Result.Error(e.message))
-            }
+            emit(catsService.getCatFact())
+            delay(refreshIntervalMs)
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }
