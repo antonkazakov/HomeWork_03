@@ -21,9 +21,9 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             catsViewModel.catsState.collect {
                 when(it){
-                    Error -> view.showToast(getString(R.string.error_text))
                     InitialValue -> delay(1000)
                     is Success -> view.populate(it.fact)
+                    is Error -> view.showToast(getString(R.string.error_text))
                 }
             }
         }
