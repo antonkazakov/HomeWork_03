@@ -17,7 +17,7 @@ class CatsViewModel(
     val catsFlowData = _catsFlowData.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             catsRepository.listenForCatFacts().catch { _catsFlowData.value = Error }
                 .collect { _catsFlowData.value = Success(it) }
         }
