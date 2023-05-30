@@ -16,8 +16,8 @@ class CatsView @JvmOverloads constructor(
         findViewById<TextView>(R.id.fact_textView).text = fact.text
     }
 
-    override fun showError() {
-        Toast.makeText(context, R.string.error_text, Toast.LENGTH_LONG).show()
+    override fun showError(throwable: Throwable) {
+        Toast.makeText(context, throwable.message.toString(), Toast.LENGTH_LONG).show()
     }
 }
 
@@ -25,5 +25,5 @@ interface ICatsView {
 
     fun populate(fact: Fact)
 
-    fun showError()
+    fun showError(throwable: Throwable)
 }

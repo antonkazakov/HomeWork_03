@@ -21,12 +21,12 @@ class CatsViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.Main) {
                 catsRepository.listenForCatFacts()
-                    .catch {
-                        _catsStateFlow.value = Error
+                    .catch { throwable ->
+                        _catsStateFlow.value = Error(throwable)
 
                     }
-                    .collect {
-                        _catsStateFlow.value = Success(it)
+                    .collect { fact ->
+                        _catsStateFlow.value = Success(fact)
                 }
             }
         }

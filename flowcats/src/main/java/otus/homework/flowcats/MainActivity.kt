@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
             catsViewModel.catsStateFlow.collectLatest { result ->
                 when(result) {
                     is Success -> view.populate(result.fact)
-                    is Error -> view.showError()
+                    is Error -> view.showError(result.throwable)
                     else -> Unit
                 }
 
