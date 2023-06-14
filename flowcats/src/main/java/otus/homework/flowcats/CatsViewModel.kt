@@ -16,15 +16,28 @@ class CatsViewModel(
     private val _stateCats = MutableStateFlow(CatsFact(""))
     val stateCats: StateFlow<CatsFact> = _stateCats
 
+    private val _stateError = MutableStateFlow<String?>(null)
+    val stateError: StateFlow<String?> = _stateError
+
     init {
         viewModelScope.launch {
             withContext(Dispatchers.Main) {
-                catsRepository.listenForCatFacts().collect {
-                    _stateCats.value = CatsFact(it.text)
-                }
+                catsRepository.listenForCatFacts().collect(::handleResult)
             }
         }
     }
+
+    private fun handleResult(result: Result<Fact>) =
+        when (result) {
+            is Result.Success ->
+                if (result.data != null) {
+                    _stateCats.value = CatsFact(result.data.text)
+                } else {
+                    _stateError.value = "Факт отсутствует или не найден"
+                }
+            is Result.Error ->
+                _stateError.value = result.exceptionMessage ?: "Неопределенная ошибка"
+        }
 }
 
 class CatsViewModelFactory(private val catsRepository: CatsRepository) :
