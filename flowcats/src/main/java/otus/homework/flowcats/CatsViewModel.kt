@@ -3,6 +3,7 @@ package otus.homework.flowcats
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -15,11 +16,16 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.value = it
-                }
+            withContext(Dispatchers.Main) {
+                catsRepository.listenForCatFacts()
+                    .collect(::emitCatsLiveDataValue)
             }
+        }
+    }
+
+    private suspend fun emitCatsLiveDataValue(fact: Fact) {
+        withContext(Dispatchers.Main) {
+            _catsLiveData.value = fact
         }
     }
 }
