@@ -18,7 +18,15 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return flow {
+            sampleRepository.produceNumbers()
+                .map { it * 5 }
+                .filterNot { it <= 20 }
+                .filterNot { (it % 2 == 0) }
+                .map { "$it" + "won" }
+                .take(3)
+                .collect()
+        }
     }
 
     /**
@@ -29,7 +37,31 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return flow {
+            sampleRepository.produceNumbers()
+                .map {
+                    when {
+                        it % 15 == 0 -> {
+                            emit("$it")
+                            emit("FizzBuzz")
+                        }
+
+                        it % 3 == 0 -> {
+                            emit("$it")
+                            emit("Fizz")
+                        }
+
+                        it % 5 == 0 -> {
+                            emit("$it")
+                            emit("Buzz")
+                        }
+
+                        else -> {
+                            emit("$it")
+                        }
+                    }
+                }
+        }
     }
 
     /**
@@ -38,7 +70,13 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return flow {
+            sampleRepository.apply {
+                produceColors().zip(produceForms()) { color, form ->
+                    Pair(color, form)
+                }
+            }
+        }
     }
 
     /**
@@ -48,6 +86,18 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return flow {
+            sampleRepository.produceNumbers()
+                .catch { exception ->
+                    if (exception == IllegalArgumentException()) {
+                        sampleRepository.completed()
+                        emit(-1)
+                    } else {
+                        sampleRepository.completed()
+                        throw exception
+                    }
+                }
+
+        }
     }
 }
