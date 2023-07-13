@@ -1,26 +1,36 @@
 package otus.homework.flowcats
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import otus.homework.flowcats.model.Error
+import otus.homework.flowcats.model.Result
+import otus.homework.flowcats.model.Success
+import java.util.concurrent.TimeoutException
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableLiveData<Fact>()
-    val catsLiveData: LiveData<Fact> = _catsLiveData
+    private val exceptionHandler =
+        CoroutineExceptionHandler { _, throwable -> handleException(throwable) }
+
+    val flow = MutableStateFlow<Result<*>>(Error(TimeoutException("nothing")))
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             catsRepository.listenForCatFacts().collect {
-                _catsLiveData.value = it
+                flow.tryEmit(Success(it))
             }
         }
+    }
+
+    private fun handleException(throwable: Throwable) {
+        flow.tryEmit(Error(throwable))
     }
 }
 
