@@ -1,14 +1,14 @@
 package otus.homework.flowcats
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import otus.homework.flowcats.model.Error
+import otus.homework.flowcats.model.Result
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,8 +22,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         job = lifecycleScope.launch {
-            catsViewModel.flow.collect {
-                view.populate(it)
+            catsViewModel.catsStateFlow.collect {
+                when (it) {
+                    is Result.Success -> view.populate(it.fact)
+                    is Result.Error -> Toast.makeText(applicationContext, it.throwable.message, Toast.LENGTH_SHORT).show()
+                    else -> Unit
+                }
             }
         }
     }

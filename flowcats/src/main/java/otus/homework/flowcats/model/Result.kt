@@ -1,7 +1,10 @@
 package otus.homework.flowcats.model
 
-sealed class Result<T> (private val value : T) {
-    fun get(): T {
-        return value
-    }
+import otus.homework.flowcats.Fact
+
+
+sealed class Result { // оптимизирован
+    data class Success(val fact: Fact) : Result()
+
+    data class Error(val throwable: Throwable) : Result()
 }
