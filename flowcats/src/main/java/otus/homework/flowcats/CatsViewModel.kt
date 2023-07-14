@@ -5,9 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import otus.homework.flowcats.model.Result
 
@@ -21,19 +19,17 @@ class CatsViewModel(
     init {
         viewModelScope.launch {
             catsRepository.listenForCatFacts()
-                .onEach {
-                    _catsStateFlow.tryEmit(Result.Success(it))
+                .collect {
+                    // ошибка flow - последствие ошибки catsRepository
+                    // поэтому обработку исключения перенёс в catsRepository
+                    _catsStateFlow.tryEmit(it)
                 }
-                .catch {
-                    _catsStateFlow.tryEmit(Result.Error(it))
-                }
-                .collect {}
         }
     }
 }
 
 class CatsViewModelFactory(private val catsRepository: CatsRepository) :
     ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
         CatsViewModel(catsRepository) as T
 }

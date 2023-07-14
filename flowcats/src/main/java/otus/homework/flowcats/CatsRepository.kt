@@ -2,6 +2,7 @@ package otus.homework.flowcats
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import otus.homework.flowcats.model.Result
 
 class CatsRepository(
     private val catsService: CatsService,
@@ -10,8 +11,14 @@ class CatsRepository(
 
     fun listenForCatFacts() = flow {
         while (true) {
-            val latestNews = catsService.getCatFact()
-            emit(latestNews)
+            // эмитим соответствующий результат запросы
+            try {
+                // ошибка подключения не поломает приложение
+                val latestNews = catsService.getCatFact()
+                emit(Result.Success(latestNews))
+            } catch (exception : Exception) {
+                emit(Result.Error(exception))
+            }
             delay(refreshIntervalMs)
         }
     }
