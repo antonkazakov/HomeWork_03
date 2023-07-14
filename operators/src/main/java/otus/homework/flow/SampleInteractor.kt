@@ -90,12 +90,12 @@ class SampleInteractor(
             sampleRepository.produceNumbers()
                 .catch { exception ->
                     if (exception == IllegalArgumentException()) {
-                        sampleRepository.completed()
                         emit(-1)
                     } else {
-                        sampleRepository.completed()
                         throw exception
                     }
+                }.onCompletion {
+                    sampleRepository.completed()
                 }
 
         }

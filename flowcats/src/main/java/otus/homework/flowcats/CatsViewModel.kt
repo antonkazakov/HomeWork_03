@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,9 +31,9 @@ class CatsViewModel(
     init {
         viewModelScope.launch(coroutineExceptionHandler) {
             withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect { fact ->
-                    _catsFact.value = Success(catsModel = fact)
-                }
+                catsRepository.listenForCatFacts()
+                    .catch { exception -> _catsFact.emit(Error(error = exception)) }
+                    .collect { fact -> _catsFact.emit(Success(catsModel = fact)) }
             }
         }
     }
