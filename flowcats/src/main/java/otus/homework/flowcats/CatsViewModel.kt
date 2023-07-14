@@ -22,14 +22,8 @@ class CatsViewModel(
     )
     val catsFact = _catsFact.asStateFlow()
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
-        viewModelScope.launch {
-            _catsFact.emit(Error(error = exception))
-        }
-    }
-
     init {
-        viewModelScope.launch(coroutineExceptionHandler) {
+        viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts()
                     .catch { exception -> _catsFact.emit(Error(error = exception)) }
