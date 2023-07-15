@@ -8,3 +8,4 @@ interface CatsService {
     @GET("random?animal_type=cat")
     suspend fun getCatFact(): Response<Fact>
 }
+

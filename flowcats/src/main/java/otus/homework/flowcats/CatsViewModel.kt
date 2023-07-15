@@ -33,3 +33,4 @@ class CatsViewModelFactory(private val catsRepository: CatsRepository) :
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
         CatsViewModel(catsRepository) as T
 }
+
