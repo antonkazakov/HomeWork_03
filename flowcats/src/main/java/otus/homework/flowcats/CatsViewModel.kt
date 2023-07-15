@@ -1,20 +1,26 @@
 package otus.homework.flowcats
 
 import androidx.lifecycle.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableLiveData<Fact>()
-    val catsLiveData: LiveData<Fact> = _catsLiveData
+    private val _catsFlowResult = MutableStateFlow<Result>(Result.Loading)
+    val catsFlow = _catsFlowResult.asStateFlow()
 
     init {
         viewModelScope.launch {
-            catsRepository.listenForCatFacts().collect {
-                _catsLiveData.value = it
-            }
+            catsRepository
+                .listenForCatFacts()
+                .catch { _catsFlowResult.value = Result.Error(it)}
+                .collect { newFact ->
+                    _catsFlowResult.value = Result.Success(newFact)
+                }
         }
     }
 }
