@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 catsViewModel.catStatFlow
-                    .collect { fact -> view.populate(fact) }
+                    .collect { result -> view.populate(result) }
             }
         }
     }
