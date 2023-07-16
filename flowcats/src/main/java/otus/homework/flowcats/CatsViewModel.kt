@@ -2,6 +2,8 @@ package otus.homework.flowcats
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -10,20 +12,16 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableLiveData<Fact>()
-    val catsLiveData: LiveData<Fact> = _catsLiveData
+    private val _catStatFlow = MutableStateFlow<Fact>(
+        Fact("", false, "", "Loading...", "", false, "", "", "")
+    )
+    val catStatFlow: StateFlow<Fact> = _catStatFlow
 
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts().collect {
-                    //_catsLiveData.value = it
-                    //   Root cause of crash is:
-                    //     setValue on Dispatchers.IO
-                    //     observer on MainTread.
-                    //   So setValue is not thread-safe method
-                    //   postValue is thread-safe method
-                    _catsLiveData.postValue(it)
+                    _catStatFlow.value = it
                 }
             }
         }
