@@ -17,7 +17,13 @@ class CatsViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.value = it
+                    //_catsLiveData.value = it
+                    //   Root cause of crash is:
+                    //     setValue on Dispatchers.IO
+                    //     observer on MainTread.
+                    //   So setValue is not thread-safe method
+                    //   postValue is thread-safe method
+                    _catsLiveData.postValue(it)
                 }
             }
         }
