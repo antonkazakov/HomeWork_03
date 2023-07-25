@@ -18,15 +18,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flow {
-            sampleRepository.produceNumbers()
-                .map { it * 5 }
-                .filterNot { it <= 20 }
-                .filterNot { (it % 2 == 0) }
-                .map { "$it" + "won" }
-                .take(3)
-                .collect()
-        }
+        return sampleRepository.produceNumbers()
+            .map { it * 5 }
+            .filterNot { it <= 20 }
+            .filterNot { (it % 2 == 0) }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -62,11 +59,9 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flow {
-            sampleRepository.apply {
-                produceColors().zip(produceForms()) { color, form ->
-                    Pair(color, form)
-                }
+        sampleRepository.apply {
+            return produceColors().zip(produceForms()) { color, form ->
+                Pair(color, form)
             }
         }
     }
@@ -78,18 +73,15 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flow {
-            sampleRepository.produceNumbers()
-                .catch { exception ->
-                    if (exception == IllegalArgumentException()) {
-                        emit(-1)
-                    } else {
-                        throw exception
-                    }
-                }.onCompletion {
-                    sampleRepository.completed()
+        return sampleRepository.produceNumbers()
+            .catch { exception ->
+                if (exception is IllegalArgumentException) {
+                    emit(-1)
+                } else {
+                    throw exception
                 }
-
-        }
+            }.onCompletion {
+                sampleRepository.completed()
+            }
     }
 }
