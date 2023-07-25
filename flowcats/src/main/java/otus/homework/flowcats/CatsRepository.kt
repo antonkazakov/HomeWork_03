@@ -11,14 +11,14 @@ class CatsRepository(
 
     fun listenForCatFacts() = flow {
         while (true) {
-            val latestNews = getResult(catsService)
+            val latestNews = getResult()
             emit(latestNews)
             delay(refreshIntervalMs)
         }
     }
 
-    private suspend fun getResult(service: CatsService): Result<Any> {
-        val result = service.getCatFact()
+    private suspend fun getResult(): Result {
+        val result = catsService.getCatFact()
         val responseBody = result.body()
         return try {
             if (result.isSuccessful && responseBody != null) Success(responseBody)

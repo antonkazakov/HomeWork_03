@@ -1,9 +1,9 @@
 package otus.homework.flowcats
 
-sealed class Result<T : Any?>
+sealed class Result
 
-class Success<T : Any>(val data: Fact) : Result<T>()
+class Success(val data: Fact) : Result()
 
-class Error<T : Any>(val errorCode: Int?, val errorMessage: String?) : Result<T>()
+class Error(val errorCode: Int?, val errorMessage: String?) : Result()
 
-class ResultException<T : Any>(val throwable: Throwable) : Result<T>()
+class ResultException(val throwable: Throwable) : Result()

@@ -19,20 +19,20 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
 
                 catsViewModel.state.collect { result ->
                     when(result){
-                        is Success<*> -> view.populate(result.data)
+                        is Success -> view.populate(result.data)
 
-                        is Error<*> -> Toast.makeText(
+                        is Error -> Toast.makeText(
                             this@MainActivity,
                             "${result.errorCode}: ${result.errorMessage}",
                             Toast.LENGTH_SHORT
                         ).show()
 
-                        is ResultException<*> -> println(result.throwable.message)
+                        is ResultException -> println(result.throwable.message)
 
                     }
 
