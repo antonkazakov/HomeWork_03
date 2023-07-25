@@ -26,8 +26,8 @@ class MainActivity : AppCompatActivity() {
              lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
                  catsViewModel.catsFact.collect { result ->
                      when(result) {
-                         is Success -> view.populate((result as? Success)?.catsModel ?: Fact())
-                         else -> { showToastException(exceptions = (result as? Error)?.error) }
+                         is Success -> view.populate(result.catsModel)
+                         is Error -> showToastException(exceptions = result.error)
                      }
                  }
              }
