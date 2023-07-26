@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
-import java.lang.IllegalStateException
+import kotlinx.coroutines.flow.zip
+
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -41,15 +41,16 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        val dividers = mapOf(3 to "Fizz", 5 to "Buzz", 15 to "FizzBuzz")
+        val dividers = mapOf(15 to "FizzBuzz", 5 to "Buzz", 3 to "Fizz")
         return flow {
             sampleRepository.produceNumbers().collect { numb ->
                 emit("$numb")
-                var str: String? = null
-                dividers.forEach {
-                    if (numb % it.key == 0) str = it.value
+                for (i in dividers) {
+                    if (numb % i.key == 0) {
+                        emit(i.value)
+                        break
+                    }
                 }
-                str?.let { emit(it) }
             }
 
         }
@@ -60,14 +61,19 @@ class SampleInteractor(
      * где f1 айтем из первого флоу, f2 айтем из второго флоу.
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
-    suspend fun task3(): Flow<Pair<String, String>> {
-        val forms = sampleRepository.produceForms().toList()
-        val colors = sampleRepository.produceColors().toList()
-        val result = flow {
-            colors.forEachIndexed { index, item ->
-                if (index < forms.size) emit(Pair(item, forms[index]))
+    fun task3(): Flow<Pair<String, String>> {
+//        val forms = sampleRepository.produceForms().toList()
+//        val colors = sampleRepository.produceColors().toList()
+//        val result = flow {
+//            colors.forEachIndexed { index, item ->
+//                if (index < forms.size) emit(Pair(item, forms[index]))
+//            }
+//        }
+
+        val result = sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { f1, f2 ->
+                f1 to f2
             }
-        }
 
         return result
     }
@@ -79,12 +85,15 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
+
         val result = sampleRepository.produceNumbers()
-            .catch {exc ->
-                if(exc is IllegalStateException) emit(-1)
+            .catch { exc ->
+                if (exc is IllegalArgumentException) emit(-1)
                 else throw exc
+
             }
         sampleRepository.completed()
         return result
+
     }
 }
