@@ -9,12 +9,14 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 
 
+@Suppress("DEPRECATION")
 @ExperimentalCoroutinesApi
 class SampleInteractorTest {
 
@@ -128,7 +130,7 @@ class SampleInteractorTest {
     }
 
     @Test
-    fun `test task4 negative`() = runTest {
+    fun `test task4 negative`() = runBlockingTest {
         every { dotsRepository.produceNumbers() } returns flow {
             (1..10).forEach {
                 if (it == 5) {
