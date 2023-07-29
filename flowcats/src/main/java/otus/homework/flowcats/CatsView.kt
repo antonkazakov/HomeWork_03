@@ -19,10 +19,3 @@ class CatsView @JvmOverloads constructor(
     override fun showError(message: String) =
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 }
-
-interface ICatsView {
-
-    fun populate(fact: CatsFact)
-
-    fun showError(message: String)
-}

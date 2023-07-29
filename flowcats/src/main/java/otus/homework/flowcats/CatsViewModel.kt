@@ -2,7 +2,6 @@ package otus.homework.flowcats
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,11 +37,4 @@ class CatsViewModel(
             is Result.Error ->
                 _stateError.value = result.exceptionMessage ?: "Неопределенная ошибка"
         }
-}
-
-class CatsViewModelFactory(private val catsRepository: CatsRepository) :
-    ViewModelProvider.NewInstanceFactory() {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        CatsViewModel(catsRepository) as T
 }
