@@ -13,21 +13,15 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsState = MutableStateFlow<Result>(Result.Success(emptyFact()))
+    private val _catsState = MutableStateFlow<Result>(Result.Success(null))
     val catsState: StateFlow<Result> = _catsState.asStateFlow()
-
-    private fun emptyFact() = Fact(
-        "", false, "", "Facts nod loaded yet", "", false, "", "", ""
-    )
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository
-                    .listenForCatFacts()
-                    .catch { _catsState.value = Result.Error(it) }
-                    .collect { _catsState.value = Result.Success(it) }
-            }
+            catsRepository
+                .listenForCatFacts()
+                .catch { _catsState.value = Result.Error(it) }
+                .collect { _catsState.value = Result.Success(it) }
         }
     }
 }

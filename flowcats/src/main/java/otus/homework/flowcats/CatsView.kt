@@ -12,8 +12,8 @@ class CatsView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr), ICatsView {
 
-    override fun populate(fact: Fact) {
-        findViewById<TextView>(R.id.fact_textView).text = fact.text
+    override fun populate(fact: Fact?) {
+        fact?.text.let { findViewById<TextView>(R.id.fact_textView).text = it }
     }
 
     override fun showError(throwable: Throwable) {
@@ -23,7 +23,7 @@ class CatsView @JvmOverloads constructor(
 
 interface ICatsView {
 
-    fun populate(fact: Fact)
+    fun populate(fact: Fact?)
 
     fun showError(throwable: Throwable)
 }
