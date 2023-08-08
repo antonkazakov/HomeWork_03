@@ -2,6 +2,7 @@ package otus.homework.flowcats
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -21,7 +22,11 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 catsViewModel.catsLiveData.collect {
-                    view.populate(it)
+                    when (it) {
+                        is Loading -> {}
+                        is Success -> view.populate(it.fact)
+                        is Error -> Toast.makeText(this@MainActivity, it.message, Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }

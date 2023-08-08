@@ -17,15 +17,15 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableStateFlow<Fact>(Fact("", 0))
-    val catsLiveData: StateFlow<Fact> = _catsLiveData.asStateFlow()
+    private val _catsLiveData = MutableStateFlow<Result>(Loading)
+    val catsLiveData = _catsLiveData.asStateFlow()
 
     init {
 
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.value = if (it is Result) Fact("Error: " + SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale("RU")).format(Date()), 0) else it as Fact
+                    _catsLiveData.value = it
                 }
             }
         }
