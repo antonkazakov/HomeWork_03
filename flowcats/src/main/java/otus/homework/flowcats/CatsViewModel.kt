@@ -6,7 +6,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 
 class CatsViewModel(
@@ -18,23 +19,23 @@ class CatsViewModel(
     val state = _state.asStateFlow()
 
     init {
-        getResult { _state.value = it }
+        getResult()
     }
 
-    private fun getResult(callback: (Result) -> Unit) {
-        viewModelScope.launch {
+    private fun getResult() {
 
-            catsRepository.listenForCatFacts().collect {
-                callback.invoke(it)
+        catsRepository.listenForCatFacts()
+            .onEach { _state.value = it }
+            .launchIn(viewModelScope)
 
-            }
-        }
     }
 }
 
+@Suppress("UNCHECKED_CAST")
 class CatsViewModelFactory(private val catsRepository: CatsRepository) :
     ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
         CatsViewModel(catsRepository) as T
 }
+
 

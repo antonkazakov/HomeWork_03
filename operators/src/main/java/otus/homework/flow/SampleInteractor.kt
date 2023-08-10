@@ -4,9 +4,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.zip
 
 
@@ -41,18 +42,27 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        val dividers = mapOf(15 to "FizzBuzz", 5 to "Buzz", 3 to "Fizz")
-        return flow {
-            sampleRepository.produceNumbers().collect { numb ->
-                emit("$numb")
-                for (i in dividers) {
-                    if (numb % i.key == 0) {
-                        emit(i.value)
-                        break
-                    }
-                }
-            }
+//        val dividers = mapOf(15 to "FizzBuzz", 5 to "Buzz", 3 to "Fizz")
+//
+//        return sampleRepository.produceNumbers().transform { numb ->
+//            emit("$numb")
+//            for (i in dividers) {
+//                if (numb % i.key == 0) {
+//                    emit(i.value)
+//                    break
+//                }
+//            }
+//
+//        }
 
+        return sampleRepository.produceNumbers().transform {
+            emit("$it")
+
+            when{
+                it % 15 == 0 -> emit("FizzBuzz")
+                it % 5 == 0 -> emit("Buzz")
+                it % 3 == 0 -> emit("Fizz")
+            }
         }
     }
 
@@ -92,7 +102,10 @@ class SampleInteractor(
                 else throw exc
 
             }
-        sampleRepository.completed()
+            .onCompletion {
+                sampleRepository.completed()
+            }
+
         return result
 
     }
