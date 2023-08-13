@@ -15,7 +15,8 @@ class CatsRepository(
                 delay(refreshIntervalMs)
             }
             catch (e: Exception) {
-                emit(Error(e.toString()))
+                emit()
+                    Error(e.toString()))
                 break
             }
         }

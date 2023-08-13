@@ -21,12 +21,9 @@ class CatsViewModel(
     val catsLiveData = _catsLiveData.asStateFlow()
 
     init {
-
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.value = it
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            catsRepository.listenForCatFacts().collect {
+                _catsLiveData.value = it
             }
         }
     }
