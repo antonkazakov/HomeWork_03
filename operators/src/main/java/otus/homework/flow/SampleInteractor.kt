@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.zip
 
@@ -75,6 +76,6 @@ class SampleInteractor(
                     else -> throw it
                 }
             }
-            .apply { sampleRepository.completed() }
+            .onCompletion { sampleRepository.completed() }
     }
 }
