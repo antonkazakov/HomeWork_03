@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
 
     private val diContainer = DiContainer()
     private val catsViewModel by viewModels<CatsViewModel> { CatsViewModelFactory(diContainer.repository) }
-    private lateinit var job : Job
+    private lateinit var job: Job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,8 +24,13 @@ class MainActivity : AppCompatActivity() {
         job = lifecycleScope.launch {
             catsViewModel.catsStateFlow.collect {
                 when (it) {
-                    is Result.Success -> view.populate(it.fact)
-                    is Result.Error -> Toast.makeText(applicationContext, it.throwable.message, Toast.LENGTH_SHORT).show()
+                    is Result.Success -> view.populate(it.fact as Fact)
+                    is Result.Error -> Toast.makeText(
+                        applicationContext,
+                        it.throwable.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     else -> Unit
                 }
             }

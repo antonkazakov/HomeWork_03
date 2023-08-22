@@ -1,10 +1,8 @@
 package otus.homework.flowcats.model
 
-import otus.homework.flowcats.Fact
 
+sealed class Result<out T> {
+    class Success<T>(val fact: T) : Result<T>()
 
-sealed class Result { // оптимизирован
-    data class Success(val fact: Fact) : Result()
-
-    data class Error(val throwable: Throwable) : Result()
+    class Error(val throwable: Throwable) : Result<Throwable>()
 }
