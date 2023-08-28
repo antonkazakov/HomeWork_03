@@ -10,16 +10,11 @@ class CatsRepository(
 
     fun listenForCatFacts() = flow {
         while (true) {
-            try {
-                emit(Success(catsService.getCatFact()))
-                delay(refreshIntervalMs)
-            }
-            catch (e: Exception) {
-                emit()
-                    Error(e.toString()))
-                break
-            }
+            emit(catsService.getCatFact())
+            delay(refreshIntervalMs)
         }
     }
+
+    suspend fun getCatFact() = catsService.getCatFact()
 
 }

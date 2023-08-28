@@ -1,17 +1,10 @@
 package otus.homework.flowcats
 
 import androidx.lifecycle.*
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
@@ -21,10 +14,16 @@ class CatsViewModel(
     val catsLiveData = _catsLiveData.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            catsRepository.listenForCatFacts().collect {
-                _catsLiveData.value = it
-            }
+        viewModelScope.launch {
+            while (true)
+                try {
+                    _catsLiveData.value = Success(catsRepository.getCatFact())
+                    delay(5000)
+                }
+                catch (e: Exception) {
+                    _catsLiveData.value = Error(e.toString())
+                    break
+                }
         }
     }
 }
