@@ -26,6 +26,14 @@ class CatsViewModel(
 
 class CatsViewModelFactory(private val catsRepository: CatsRepository) :
     ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-        CatsViewModel(catsRepository) as T
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return when (modelClass) {
+            CatsViewModel::class.java ->
+                CatsViewModel(catsRepository) as T
+
+            else -> {
+                error("Unknown $modelClass")
+            }
+        }
+    }
 }
