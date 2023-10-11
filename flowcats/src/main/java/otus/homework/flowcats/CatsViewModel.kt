@@ -2,7 +2,7 @@ package otus.homework.flowcats
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -10,15 +10,18 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableLiveData<Fact>()
-    val catsLiveData: LiveData<Fact> = _catsLiveData
+    private val _catsStateFlow = MutableStateFlow<Result<Fact>>(Result.Initial)
+    val catsStateFlow: StateFlow<Result<Fact>> = _catsStateFlow
 
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.value = it
-                }
+                catsRepository.listenForCatFacts()
+                    .catch { exception ->
+                        _catsStateFlow.emit(Result.Error(exception.message.orEmpty()))
+                    }.collect { fact ->
+                        _catsStateFlow.emit(Result.Success(fact))
+                    }
             }
         }
     }
