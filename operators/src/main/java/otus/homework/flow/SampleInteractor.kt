@@ -19,10 +19,10 @@ class SampleInteractor(
      */
     fun task1(): Flow<String> {
         return sampleRepository.produceNumbers()
-                .map { it * 5 }
-                .filter { it >= 20 && it % 2 != 0 }
-                .map { "$it won" }
-                .take(3)
+            .map { it * 5 }
+            .filter { it >= 20 && it % 2 != 0 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -34,7 +34,7 @@ class SampleInteractor(
      */
     fun task2(): Flow<String> {
         return sampleRepository.produceNumbers()
-                .onFizzBuzz()
+            .onFizzBuzz()
     }
 
     private fun Flow<Int>.onFizzBuzz(): Flow<String> = transform { value ->
@@ -51,9 +51,9 @@ class SampleInteractor(
      */
     fun task3(): Flow<Pair<String, String>> {
         return sampleRepository.produceColors()
-                .zip(sampleRepository.produceForms()) { a, b ->
-                    Pair(a, b)
-                }
+            .zip(sampleRepository.produceForms()) { a, b ->
+                Pair(a, b)
+            }
     }
 
     /**
@@ -65,7 +65,13 @@ class SampleInteractor(
     fun task4(): Flow<Int> {
         return sampleRepository.produceNumbers()
                 .catch {
-                    emit(-1)
+                    if (it is java.lang.IllegalArgumentException)
+                        emit(-1)
+                    if (it is SecurityException){
+                        throw SecurityException()
+                    }
+                }
+                .onCompletion {
                     sampleRepository.completed()
                 }
     }
