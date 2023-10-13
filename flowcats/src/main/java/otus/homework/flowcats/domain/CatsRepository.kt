@@ -1,7 +1,12 @@
-package otus.homework.flowcats
+package otus.homework.flowcats.domain
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import otus.homework.flowcats.models.domain.Fact
+import otus.homework.flowcats.models.domain.Result
 
 class CatsRepository(
     private val catsService: CatsService,
@@ -11,8 +16,8 @@ class CatsRepository(
     fun listenForCatFacts() = flow {
         while (true) {
             val latestNews = catsService.getCatFact()
-            emit(latestNews)
+            emit(Fact(latestNews.text))
             delay(refreshIntervalMs)
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }
