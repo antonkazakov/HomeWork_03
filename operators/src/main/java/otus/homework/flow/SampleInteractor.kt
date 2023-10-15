@@ -11,14 +11,19 @@ class SampleInteractor(
     /**
      * Реализуйте функцию task1 которая последовательно:
      * 1) умножает числа на 5
-     * 2) убирает чила <= 20
+     * 2) убирает чиcла <= 20
      * 3) убирает четные числа
      * 4) добавляет постфикс "won"
      * 5) берет 3 первых числа
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { it * 5 }
+            .filter { it > 20 }
+            .filterNot { it % 2 == 0 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -29,7 +34,17 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers().fizzBuzz()
+
+    }
+
+    private fun Flow<Int>.fizzBuzz(): Flow<String> = transform {
+        emit(it.toString())
+        when {
+            it % 15 == 0 -> emit("FizzBuzz")
+            it % 5 == 0 -> emit("Buzz")
+            it % 3 == 0 -> emit("Fizz")
+        }
     }
 
     /**
@@ -38,7 +53,10 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { source1, source2 ->
+                Pair(source1, source2)
+            }
     }
 
     /**
@@ -48,6 +66,17 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .catch {
+                if (it is IllegalArgumentException) {
+                    emit(-1)
+                } else {
+                    throw it
+                }
+            }
+            .onCompletion {
+                sampleRepository.completed()
+            }
+
     }
 }
