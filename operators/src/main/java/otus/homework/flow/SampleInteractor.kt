@@ -1,7 +1,15 @@
 package otus.homework.flow
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -18,7 +26,13 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { number -> number * 5 }
+            .filter { number -> number > 20 }
+            .filter { number -> number % 2 != 0 }
+            .take(3)
+            .flatMapLatest { number -> flow { emit("$number won") } }
+            .flowOn(Dispatchers.Default)
     }
 
     /**
@@ -29,7 +43,29 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .flatMapLatest { number ->
+                flow {
+                    when {
+                        (number % 15 == 0) -> {
+                            emit("$number")
+                            emit("FizzBuzz")
+                        }
+                        (number % 5 == 0) -> {
+                            emit("$number")
+                            emit("Buzz")
+                        }
+                        (number % 3 == 0) -> {
+                            emit("$number")
+                            emit("Fizz")
+                        }
+                        else -> {
+                            emit("$number")
+                        }
+                    }
+                }
+            }
+            .flowOn(Dispatchers.Default)
     }
 
     /**
