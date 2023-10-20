@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
@@ -137,8 +138,9 @@ class SampleInteractorTest {
             }
         }
 
-        assertThrows(SecurityException::class.java){
-            runTest {
+        assertThrows(SecurityException::class.java) {
+//      runTest throws IllegalStateException with "only single call to `runTest` can be performed during one test"
+            runBlocking {
                 dotsInteractor.task4().toList()
             }
 

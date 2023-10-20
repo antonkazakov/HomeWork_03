@@ -3,14 +3,15 @@ package otus.homework.flow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.zip
+import java.lang.IllegalArgumentException
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -59,14 +60,17 @@ class SampleInteractor(
                             emit("$number")
                             emit("FizzBuzz")
                         }
+
                         (number % 5 == 0) -> {
                             emit("$number")
                             emit("Buzz")
                         }
+
                         (number % 3 == 0) -> {
                             emit("$number")
                             emit("Fizz")
                         }
+
                         else -> {
                             emit("$number")
                         }
@@ -94,6 +98,17 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return flow {
+            try {
+                val numbers = sampleRepository.produceNumbers()
+                emitAll(numbers)
+            } catch (e: IllegalArgumentException) {
+                emit(-1)
+            } catch (e: Exception) {
+                throw e
+            } finally {
+                sampleRepository.completed()
+            }
+        }
     }
 }
