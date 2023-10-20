@@ -3,12 +3,14 @@ package otus.homework.flow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.zip
 import java.lang.IllegalArgumentException
@@ -98,17 +100,16 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flow {
-            try {
-                val numbers = sampleRepository.produceNumbers()
-                emitAll(numbers)
-            } catch (e: IllegalArgumentException) {
-                emit(-1)
-            } catch (e: Exception) {
-                throw e
-            } finally {
+        return sampleRepository.produceNumbers()
+            .catch { tr ->
+                if (tr is IllegalArgumentException) {
+                    emit(-1)
+                } else {
+                    throw tr
+                }
+            }
+            .onCompletion {
                 sampleRepository.completed()
             }
-        }
     }
 }
