@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.zip
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -32,8 +33,15 @@ class SampleInteractor(
             .filter { number -> number % 2 != 0 }
             .take(3)
             .flatMapLatest { number -> flow { emit("$number won") } }
+//            .flatMapWith("won")
             .flowOn(Dispatchers.Default)
     }
+
+//    private fun <Int> Flow<Int>.flatMapWith(text: String): Flow<String> {
+//        return transform {number ->
+//            emit("$number $text")
+//        }
+//    }
 
     /**
      * Классическая задача FizzBuzz с небольшим изменением.
@@ -74,7 +82,9 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        val colors = sampleRepository.produceColors()
+        val forms = sampleRepository.produceForms()
+        return colors.zip(forms) { color, form -> Pair(color, form) }
     }
 
     /**
