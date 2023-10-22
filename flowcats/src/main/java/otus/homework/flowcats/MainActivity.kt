@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
             catsViewModel.catsStateFlow.collect {
                 when (it) {
                     is Result.Success -> it.value?.let { fact -> view.populate(fact) }
+                    is Result.Initial -> Toast.makeText(this@MainActivity, it.initialMessage, Toast.LENGTH_SHORT)
+                        .show()
                     is Result.Error -> Toast.makeText(this@MainActivity, "ERROR", Toast.LENGTH_SHORT)
                         .show()
 
