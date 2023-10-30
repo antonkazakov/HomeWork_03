@@ -15,12 +15,11 @@ class CatsViewModel(
     val catsFactFlow: StateFlow<Result?> = _catsFactFlow
     init{
         viewModelScope.launch {
-           catsRepository.listenForCatFacts().collect(){facts ->
+           catsRepository.listenForCatFacts().collect {facts ->
                 _catsFactFlow.value = facts
             }
         }
     }
-
 }
 
 class CatsViewModelFactory(private val catsRepository: CatsRepository) :
