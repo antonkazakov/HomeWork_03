@@ -20,14 +20,12 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.Main) {
                 catsRepository.listenForCatFacts().collect {
                     when (it) {
                         is Result.Success -> _catsFlow.value = it.value
                         is Result.Error -> _error.value = it
                     }
                 }
-            }
         }
     }
 }
