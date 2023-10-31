@@ -16,6 +16,7 @@ class CatsViewModel(
 ) : ViewModel() {
 
     private val _catsState = MutableStateFlow(
+        Result.success(
         Fact(
             createdAt = "",
             deleted = false,
@@ -26,9 +27,9 @@ class CatsViewModel(
             type = "",
             user = "",
             updatedAt = "",
-        )
+        ))
     )
-    val catsState = _catsState as StateFlow<Fact>
+    val catsState = _catsState as StateFlow<Result<Fact>>
 
     init {
         catsRepository.listenForCatFacts().onEach {

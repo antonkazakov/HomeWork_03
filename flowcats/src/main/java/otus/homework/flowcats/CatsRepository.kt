@@ -13,9 +13,10 @@ class CatsRepository(
         while (true) {
             runCatching {
                 Log.d("CatsRepository", catsService.getCatFact().toString())
-                val latestNews = catsService.getCatFact()
+                val latestNews = Result.success(catsService.getCatFact())
             emit(latestNews)
             }.onFailure {
+                Result.failure<Fact>(it)
                 Log.d("CatsRepository", it.toString())
             }
             delay(refreshIntervalMs)
