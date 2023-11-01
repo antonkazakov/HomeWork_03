@@ -14,8 +14,8 @@ class CatsRepository(
     fun listenForCatFacts() = flow {
         while (currentCoroutineContext().isActive) {
             try {
-                val latestNews = catsService.getCatFact()
-                emit(Result.Success(latestNews))
+                val fact = catsService.getCatFact()
+                emit(Result.Success(fact))
                 delay(refreshIntervalMs)
             } catch (e: CancellationException) {
                 throw e

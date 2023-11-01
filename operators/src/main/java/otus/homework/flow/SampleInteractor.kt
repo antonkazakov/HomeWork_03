@@ -37,7 +37,6 @@ class SampleInteractor(
             .take(3)
             .flatMapLatest { number -> flow { emit("$number won") } }
 //            .flatMapWith("won")
-            .flowOn(Dispatchers.Default)
     }
 
 //    private fun <Int> Flow<Int>.flatMapWith(text: String): Flow<String> {
@@ -57,29 +56,24 @@ class SampleInteractor(
         return sampleRepository.produceNumbers()
             .flatMapLatest { number ->
                 flow {
+                    emit("$number")
                     when {
                         (number % 15 == 0) -> {
-                            emit("$number")
                             emit("FizzBuzz")
                         }
 
                         (number % 5 == 0) -> {
-                            emit("$number")
                             emit("Buzz")
                         }
 
                         (number % 3 == 0) -> {
-                            emit("$number")
                             emit("Fizz")
                         }
 
-                        else -> {
-                            emit("$number")
-                        }
+                        else -> {}
                     }
                 }
             }
-            .flowOn(Dispatchers.Default)
     }
 
     /**
