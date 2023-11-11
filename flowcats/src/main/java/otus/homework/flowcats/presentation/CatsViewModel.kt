@@ -1,7 +1,5 @@
 package otus.homework.flowcats.presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -17,10 +15,6 @@ import otus.homework.flowcats.models.domain.Result
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
-
-    private val _catsLiveData = MutableLiveData<Fact>()
-    val catsLiveData: LiveData<Fact> = _catsLiveData
-
     private val _uiState = MutableStateFlow<Result>(Result.Success(Fact("")))
     val uiState: StateFlow<Result> = _uiState
 
@@ -31,8 +25,6 @@ class CatsViewModel(
     init {
         viewModelScope.launch(exceptionHandler) {
             catsRepository.listenForCatFacts().collect { it: Fact ->
-                //_catsLiveData.postValue(it.value)
-
                 _uiState.value = Result.Success(it)
             }
         }

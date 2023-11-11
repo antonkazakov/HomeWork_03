@@ -40,7 +40,6 @@ class SampleInteractor(
      */
     fun task2(): Flow<String> = sampleRepository.produceNumbers()
         .transform { number: Int ->
-            emit(number.toString())
             val resultString = StringBuilder("")
             if (number % 3 == 0) {
                 resultString.append("Fizz")
@@ -49,6 +48,7 @@ class SampleInteractor(
                 resultString.append("Buzz")
             }
             if (resultString.isNotBlank()) {
+                emit(number.toString())
                 emit(resultString.toString())
             }
         }

@@ -18,10 +18,6 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
 
-        catsViewModel.catsLiveData.observe(this) {
-            view.populate(it.text)
-        }
-
         lifecycleScope.launchWhenStarted {
             catsViewModel.uiState
                 .collect {
