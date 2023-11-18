@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import otus.homework.flowcats.Result
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,8 +19,12 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
 
-        catsViewModel.catsFlow.onEach { fact ->
-            view.populate(fact)
+        catsViewModel.catsFlow.onEach { result ->
+            when(result) {
+                is Result.Success -> result.data?.let { view.populate(it) }
+                is Result.Error -> view.showErrorToast(result.message)
+                else -> {} //do nothing 
+            }
         }.launchIn(this.lifecycleScope)
     }
 }
