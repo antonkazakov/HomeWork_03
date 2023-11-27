@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
@@ -20,8 +21,9 @@ class CatsViewModel(
     val catsStateFlow = _catsStateFlow.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             catsRepository.listenForCatFacts()
+                .flowOn(Dispatchers.IO)
                 .onEach {
                     if (_catsStateFlow.value is Result.Error)
                         _catsStateFlow.value = null
