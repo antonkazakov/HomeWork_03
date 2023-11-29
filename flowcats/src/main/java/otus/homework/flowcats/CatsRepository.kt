@@ -12,7 +12,7 @@ class CatsRepository(
         while (true) {
             try {
                 val latestNews = catsService.getCatFact()
-                emit(latestNews)
+                emit(Result.Success(latestNews))
             } catch (e: Exception){
                 emit(Result.Error(e.message, e))
             }
