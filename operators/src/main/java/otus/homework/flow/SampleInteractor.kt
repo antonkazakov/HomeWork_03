@@ -39,15 +39,13 @@ class SampleInteractor(
             if (number % 5 == 0) {
                 flag += 2
             }
+            emit("$number")
             when (flag) {
-                0 -> emit("$number")
-                1 -> { emit("$number")
-                    emit("Fizz") }
-                2 -> { emit("$number")
-                emit("Buzz") }
-                3 -> { emit("$number")
-                    emit("FizzBuzz") }
-                else -> emit("$number")
+                0 -> {}
+                1 -> { emit("Fizz") }
+                2 -> { emit("Buzz") }
+                3 -> { emit("FizzBuzz") }
+                else -> {}
             }
         }
     }
