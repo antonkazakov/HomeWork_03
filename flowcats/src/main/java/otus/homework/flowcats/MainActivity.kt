@@ -17,14 +17,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         lifecycleScope.launchWhenResumed {
-            catsViewModel.catsStateFlow.collect { fact ->
-                fact?.let { view.populate(fact) }
-            }
-        }
-
-        lifecycleScope.launchWhenResumed {
-            catsViewModel.errorStateFlow.collect { errorMessage ->
-                view.showToast(errorMessage)
+            catsViewModel.catsStateFlow.collect { result ->
+                when (result) {
+                    is Result.Success -> {
+                        view.populate(result.data)
+                    }
+                    is Result.Error -> {
+                        view.showToast(result.errorMessage)
+                    }
+                    is Result.Initial -> {}
+                }
             }
         }
     }
