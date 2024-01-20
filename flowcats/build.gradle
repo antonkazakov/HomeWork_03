@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace = "otus.homework.flowcats"
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
