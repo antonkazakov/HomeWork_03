@@ -2,20 +2,48 @@ package otus.homework.flowcats
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
     private val diContainer = DiContainer()
     private val catsViewModel by viewModels<CatsViewModel> { CatsViewModelFactory(diContainer.repository) }
-
+    private val scope = CoroutineScope(Dispatchers.Default)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
 
-        catsViewModel.catsLiveData.observe(this){
-            view.populate(it)
+
+
+        scope.launch {
+            catsViewModel.catsData
+                .collect { fact ->
+                    withContext(Dispatchers.Main) {
+                        view.populate(fact = fact)
+                    }
+                }
         }
     }
+
+
+    override fun onStop() {
+        if (isFinishing) {
+            scope.cancel("Stop PresenterScope in Activity")
+        }
+        super.onStop()
+    }
 }
+
