@@ -13,17 +13,21 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private var _catsData = MutableStateFlow<Fact>(Fact("BEGIN READ FACTS ABOUT CATS", 1))
+    private var _catsData = MutableStateFlow<Result>(Result.Init)
     val catsData = _catsData.asStateFlow()
 
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts()
-                    .collect() { fact ->
-                        _catsData.value = fact
-
-                    }
+                try {
+                    catsRepository.listenForCatFacts()
+                        .collect() { fact ->
+                            _catsData.value = Result.Success(fact)
+                        }
+                } catch (e: Exception) {
+                    _catsData.value = Result.Error("$e")
+                    _catsData.value = Result.Init
+                }
             }
         }
     }

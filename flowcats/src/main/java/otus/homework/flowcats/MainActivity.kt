@@ -30,9 +30,21 @@ class MainActivity : AppCompatActivity() {
 
         scope.launch {
             catsViewModel.catsData
-                .collect { fact ->
+                .collect { state ->
                     withContext(Dispatchers.Main) {
-                        view.populate(fact = fact)
+                        when (state) {
+                            is Result.Success<*> -> {
+                                view.progressOff()
+                                view.populate(fact = state.valueCats as Fact)
+                            }
+
+                            is Result.Error -> {
+                                Toast.makeText(this@MainActivity," Error ${state.error}", Toast.LENGTH_LONG).show()
+                            }
+                            Result.Init -> {
+                                view.progressOn()
+                            }
+                        }
                     }
                 }
         }
