@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -23,10 +24,10 @@ class SampleInteractorTest {
     @Test
     fun `test task1`() = runBlockingTest {
         every { dotsRepository.produceNumbers() } returns flowOf(7, 12, 4, 8, 11, 5, 7, 16, 99, 1)
-
         val expected = listOf("35 won", "55 won", "25 won")
         val actual = dotsInteractor.task1().toList()
 
+        actual
         assertEquals(expected, actual)
     }
 
