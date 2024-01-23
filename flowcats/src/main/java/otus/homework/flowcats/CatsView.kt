@@ -11,12 +11,16 @@ class CatsView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr), ICatsView {
 
-    override fun populate(fact: Fact) {
-        findViewById<TextView>(R.id.fact_textView).text = fact.text
+    override fun populate(uiState: CatsUiState<Fact>) {
+        findViewById<TextView>(R.id.fact_textView).text = when (uiState) {
+            is CatsUiState.Common -> uiState.data.text
+            is CatsUiState.Error -> uiState.message
+            is CatsUiState.Loading -> "Loaing..."
+        }
     }
 }
 
 interface ICatsView {
 
-    fun populate(fact: Fact)
+    fun populate(uiState: CatsUiState<Fact>)
 }
