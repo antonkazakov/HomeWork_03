@@ -15,7 +15,7 @@ class CatsView @JvmOverloads constructor(
         findViewById<TextView>(R.id.fact_textView).text = when (uiState) {
             is CatsUiState.Common -> uiState.data.text
             is CatsUiState.Error -> uiState.message
-            is CatsUiState.Loading -> "Loaing..."
+            is CatsUiState.Loading -> "Loading..."
         }
     }
 }

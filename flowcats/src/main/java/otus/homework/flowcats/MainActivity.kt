@@ -20,9 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                catsViewModel.catsState.collect { uiState ->
-                    view.populate(uiState)
-                }
+                catsViewModel.catsState.collect(view::populate)
             }
         }
     }
