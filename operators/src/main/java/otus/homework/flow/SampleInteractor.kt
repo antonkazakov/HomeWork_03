@@ -18,7 +18,11 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return flowOf("1","2","3","4","5","6","7","8","9","0")
+            .map { it.toInt() * 5 }
+            .filter { it > 20 && it%2 == 0}
+            .map { it.toString() + " won" }
+            .take(3)
     }
 
     /**
@@ -29,7 +33,18 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return flowOf("11", "2", "3", "40", "5", "6", "70", "8", "9", "0")
+            .transform { it ->
+                if (it.toInt() % 3 == 0) {
+                    emit(it + " Fizz")
+                } else if (it.toInt() % 5 == 0) {
+                    emit(it + " Buzz")
+                } else if (it.toInt() % 15 == 0) {
+                    emit(it + " FizzBuzz")
+                } else {
+                    emit(it)
+                }
+            }
     }
 
     /**
@@ -38,7 +53,9 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        val list1 = listOf("1","2","3","4","5","6","7","8","9","0").asFlow()
+        val list2 = listOf("37", "41", "25", "1").asFlow()
+        return list1.zip(list2) { it1, it2 -> Pair(it1, it2) }
     }
 
     /**
@@ -48,6 +65,8 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return flowOf(0).flatMapLatest { flow<Int> { throw IllegalArgumentException(it.toString())}}
+            .catch{ e -> if(e is IllegalArgumentException) emit(-1) else throw e}
+            .onCompletion { sampleRepository.completed() }
     }
 }
