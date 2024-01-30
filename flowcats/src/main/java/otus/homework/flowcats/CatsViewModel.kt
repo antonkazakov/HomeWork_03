@@ -17,19 +17,26 @@ class CatsViewModel(
     val catsData = _catsData.asStateFlow()
 
     init {
+        loadFact()
+    }
+
+    private fun loadFact(){
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                try {
-                    catsRepository.listenForCatFacts()
-                        .collect() { fact ->
-                            _catsData.value = Result.Success(fact)
-                        }
-                } catch (e: Exception) {
-                    _catsData.value = Result.Error("$e")
-                    _catsData.value = Result.Init
-                }
+
+            try {
+                catsRepository.listenForCatFacts()
+                    .collect() { fact ->
+                        _catsData.value = Result.Success(fact)
+                    }
+            } catch (e: Exception) {
+                _catsData.value = Result.Error("$e")
             }
         }
+    }
+
+    fun retry() {
+        _catsData.value = Result.Init
+        loadFact()
     }
 }
 

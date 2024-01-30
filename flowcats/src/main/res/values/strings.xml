@@ -2,4 +2,5 @@
     <string name="app_name">Flow cats</string>
     <string name="fact">FACT</string>
     <string name="pause">PAUSE</string>
+    <string name="retry">RETRY</string>
 </resources>
