@@ -21,27 +21,11 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.Main) {
+            withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts()
                     .collect{
                         _cats.value = it
                     }
-
-
-                /*.collect {
-                    _catsLiveData.value = it
-                }*/
-                /*   apiHelper.getUsers()
-                .flowOn(dispatcherProvider.io)
-                .catch { e ->
-                    _uiState.value = UiState.Error(e.toString())
-                }
-                .onCompletion {
-                    _uiState.value = UiState.Success("Task Completed")
-                }
-                .collect {
-                }
-        }*/
             }
         }
     }
