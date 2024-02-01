@@ -19,12 +19,8 @@ class CatsViewModel(
     private val _catsLiveData = MutableLiveData<Fact>()
     val catsLiveData: LiveData<Fact> = _catsLiveData
 
-    // Правильно ли это?
-    // Так как для StateFlow нужно задавать начальное значение,
-    // а данных с сервера еще нет, то либо тип null,
-    // либо какой-то факт нужно в коде задать сразу.
-    private val _catsData = MutableStateFlow<Result?>(null)
-    val catsData: Flow<Result?> = _catsData.asStateFlow()
+    private val _catsData = MutableStateFlow<Result>(Result.Initial)
+    val catsData: Flow<Result> = _catsData.asStateFlow()
 
     init {
         viewModelScope.launch {

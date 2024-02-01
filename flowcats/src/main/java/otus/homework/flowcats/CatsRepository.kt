@@ -4,9 +4,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 
-sealed class Result {
-    data class Success(val fact: Fact): Result()
-    data class Error(val tr: Throwable): Result()
+sealed interface Result {
+    data class Success(val fact: Fact): Result
+    data class Error(val tr: Throwable): Result
+    data object Initial: Result
 }
 
 class CatsRepository(

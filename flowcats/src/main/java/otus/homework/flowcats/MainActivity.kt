@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             catsViewModel.catsData.collect {
-                it?.let {
                     when(it) {
                         is Result.Error -> {
                             Toast.makeText(this@MainActivity, "${it.tr.message}", Toast.LENGTH_LONG).show()
@@ -27,8 +26,9 @@ class MainActivity : AppCompatActivity() {
                         is Result.Success -> {
                             view.populate(it.fact)
                         }
+
+                        Result.Initial -> {}
                     }
-                }
             }
         }
     }
