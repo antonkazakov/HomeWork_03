@@ -70,8 +70,9 @@ class SampleInteractor(
     fun task4(): Flow<Int> {
         return sampleRepository
             .produceNumbers()
-            .catch {
+            .onCompletion {
                 sampleRepository.completed()
+                if (it == null) return@onCompletion
                 if (it is IllegalArgumentException) emit(-1) else throw it
             }
     }
