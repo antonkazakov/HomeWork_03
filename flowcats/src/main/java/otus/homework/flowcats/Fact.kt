@@ -22,3 +22,15 @@ data class Fact(
 	@field:SerializedName("updatedAt")
 	val updatedAt: String
 )
+
+fun emptyFact(): Fact = Fact(
+	createdAt = "",
+	deleted = false,
+	id = "",
+	text = "",
+	source = "",
+	used = false,
+	type = "",
+	user = "",
+	updatedAt = ""
+)

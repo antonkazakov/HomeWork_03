@@ -3,6 +3,7 @@ package otus.homework.flowcats
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 
 class CatsView @JvmOverloads constructor(
@@ -14,9 +15,25 @@ class CatsView @JvmOverloads constructor(
     override fun populate(fact: Fact) {
         findViewById<TextView>(R.id.fact_textView).text = fact.text
     }
+
+    override fun renderState(state: Result<Fact>) {
+        when (state) {
+            is Result.Success -> populate(state.data)
+            is Result.Error -> showToast(state.exception.toString())
+        }
+    }
+
+    override fun showToast(text: String) {
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show()
+    }
 }
 
 interface ICatsView {
 
     fun populate(fact: Fact)
+
+    fun renderState(state: Result<Fact>)
+
+    fun showToast(text: String)
+
 }

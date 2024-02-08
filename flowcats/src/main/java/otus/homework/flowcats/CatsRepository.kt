@@ -1,5 +1,6 @@
 package otus.homework.flowcats
 
+import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 
@@ -13,6 +14,7 @@ class CatsRepository(
             val latestNews = catsService.getCatFact()
             emit(latestNews)
             delay(refreshIntervalMs)
+            Log.d("XXX", "${System.currentTimeMillis()} - ${latestNews.text}")
         }
     }
 }
