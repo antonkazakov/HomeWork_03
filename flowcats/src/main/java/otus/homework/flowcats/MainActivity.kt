@@ -7,14 +7,18 @@ import androidx.activity.viewModels
 class MainActivity : AppCompatActivity() {
 
     private val diContainer = DiContainer()
-    private val catsViewModel by viewModels<CatsViewModel> { CatsViewModelFactory(diContainer.repository) }
+    private val catsViewModel by viewModels<CatsViewModel> {
+        CatsViewModel.getCatsViewModelFactory(
+            diContainer.repository
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
 
-        catsViewModel.catsLiveData.observe(this){
+        catsViewModel.catsLiveData.observe(this) {
             view.populate(it)
         }
     }
