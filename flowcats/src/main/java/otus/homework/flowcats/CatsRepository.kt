@@ -1,5 +1,6 @@
 package otus.homework.flowcats
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -18,5 +19,6 @@ class CatsRepository(
         }
     }.catch { throwable ->
         emit(Result.Error(throwable))
-    }
+    }.flowOn(Dispatchers.IO)
+
 }

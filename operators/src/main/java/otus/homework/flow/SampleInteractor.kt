@@ -38,14 +38,15 @@ class SampleInteractor(
         return sampleRepository
             .produceNumbers()
             .flatMapConcat { number ->
-                if (number % 15 == 0) {
-                    flowOf(number.toString(), "FizzBuzz")
-                } else if (number % 5 == 0) {
-                    flowOf(number.toString(), "Buzz")
-                } else if (number % 3 == 0) {
-                    flowOf(number.toString(), "Fizz")
-                } else {
-                    flowOf(number.toString())
+                flow {
+                    emit(number.toString())
+                    if (number % 15 == 0) {
+                        emit("FizzBuzz")
+                    } else if (number % 5 == 0) {
+                        emit("Buzz")
+                    } else if (number % 3 == 0) {
+                        emit("Fizz")
+                    }
                 }
             }
     }

@@ -17,12 +17,8 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect { result ->
-                    withContext(Dispatchers.Main) {
-                        _uiState.value = result
-                    }
-                }
+            catsRepository.listenForCatFacts().collect { result ->
+                _uiState.value = result
             }
         }
     }
