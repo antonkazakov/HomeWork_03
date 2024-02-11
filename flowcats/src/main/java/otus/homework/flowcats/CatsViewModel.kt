@@ -5,23 +5,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CatsViewModel(private val catsRepository: CatsRepository) : ViewModel() {
 
   private val _catsResultStateFlow = MutableStateFlow<Result>(Result.Loading)
   val catsResultStateFlow: StateFlow<Result> = _catsResultStateFlow.asStateFlow()
 
-    init {
-      viewModelScope.launch {
-        withContext(Dispatchers.IO) {
-          catsRepository.listenForCatFacts().collect { result->
-            _catsResultStateFlow.emit(result)
-          }
-        }
+  init {
+    viewModelScope.launch {
+      catsRepository.listenForCatFacts().flowOn(Dispatchers.IO).collect { result ->
+        _catsResultStateFlow.emit(result)
       }
     }
+  }
 }
 
 class CatsViewModelFactory(private val catsRepository: CatsRepository) :
