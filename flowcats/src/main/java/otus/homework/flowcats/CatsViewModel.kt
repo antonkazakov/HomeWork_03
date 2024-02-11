@@ -1,5 +1,6 @@
 package otus.homework.flowcats
 
+import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,21 +15,15 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsFlow = MutableStateFlow<Result?>(null)
+    private val _catsFlow = MutableStateFlow<Result>(Result.Loading)
     val catsFlow = _catsFlow.asStateFlow()
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().catch {
-                    withContext(Dispatchers.Main) {
-                        _catsFlow.value = Result.Error(it.message ?: "Unknown error")
-                    }
-                }.collect {
-                    withContext(Dispatchers.Main) {
-                        _catsFlow.value = Result.Success(it)
-                    }
-                }
+            catsRepository.listenForCatFacts().catch {
+                _catsFlow.value = Result.Error(it.message ?: "Unknown error")
+            }.collect {
+                _catsFlow.value = Result.Success(it)
             }
         }
     }
@@ -36,6 +31,8 @@ class CatsViewModel(
     sealed interface Result {
         data class Success(val fact: Fact) : Result
         data class Error(val error: String) : Result
+
+        object Loading : Result
     }
 }
 
