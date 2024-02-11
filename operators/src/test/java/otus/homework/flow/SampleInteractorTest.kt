@@ -12,7 +12,9 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
-
+import io.mockk.InternalPlatformDsl.toArray
+import kotlinx.coroutines.flow.*
+import java.util.*
 
 @ExperimentalCoroutinesApi
 class SampleInteractorTest {
@@ -65,8 +67,7 @@ class SampleInteractorTest {
             "20",
             "Buzz",
             "21",
-            "Fizz"
-        )
+            "Fizz")
         val actual = dotsInteractor.task2().toList()
 
         assertEquals(expected, actual)
