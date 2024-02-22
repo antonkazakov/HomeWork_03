@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 catsViewModel.catsLiveData.collect {
                     it.let { result ->
                         when (result) {

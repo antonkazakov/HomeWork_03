@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
@@ -18,16 +18,15 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository
-                    .listenForCatFacts()
-                    .catch {
-                        _catsLiveData.value = Result.Error(it)
-                    }
-                    .collect { fact ->
-                        _catsLiveData.value = Result.Success(fact)
-                    }
-            }
+            catsRepository
+                .listenForCatFacts()
+                .flowOn(Dispatchers.IO)
+                .catch {
+                    _catsLiveData.value = Result.Error(it)
+                }
+                .collect { fact ->
+                    _catsLiveData.value = Result.Success(fact)
+                }
         }
     }
 }
