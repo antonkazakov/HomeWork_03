@@ -11,10 +11,10 @@ data class Fact(
 	val id: String,
 	@field:SerializedName("text")
 	val text: String,
-	@field:SerializedName("source")
+	@field:SerializedName("__v")
 	val source: String,
-	@field:SerializedName("used")
-	val used: Boolean,
+	/*@field:SerializedName("used")
+	val used: Boolean,*/
 	@field:SerializedName("type")
 	val type: String,
 	@field:SerializedName("user")
