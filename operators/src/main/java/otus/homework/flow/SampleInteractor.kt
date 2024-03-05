@@ -44,7 +44,7 @@ class SampleInteractor(
             .map { element ->
                 if (element % 15 == 0) {
                     "$element, FizzBuzz"
-                } else if(element % 3 == 0) {
+                } else if (element % 3 == 0) {
                     "$element, Fizz"
                 } else if (element % 5 == 0) {
                     "$element, Buzz"
@@ -60,9 +60,10 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return sampleRepository.produceColors().zip(sampleRepository.produceForms()) { firstFlow, secondFlow ->
-            Pair(firstFlow, secondFlow)
-        }
+        return sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { firstFlow, secondFlow ->
+                Pair(firstFlow, secondFlow)
+            }
     }
 
     /**
@@ -72,15 +73,13 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flow {
-            sampleRepository.produceNumbers().catch {
-                if (it is IllegalArgumentException) emit(-1)
-                else throw it
-            }.onCompletion {
-                sampleRepository.completed()
-            }.collect {
-                emit(it)
-            }
-        }
+        return sampleRepository.produceNumbers()
+            .catch { exception ->
+                if (exception is IllegalArgumentException) {
+                    emit(-1)
+                } else {
+                    throw exception
+                }
+            }.onCompletion { sampleRepository.completed() }
     }
 }
