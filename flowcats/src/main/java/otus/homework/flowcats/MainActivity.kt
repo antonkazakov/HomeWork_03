@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
 
-        lifecycleScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch {
             catsViewModel.catFact.collectLatest { result ->
                 if(result is Result.Success)
                     view.populate(result.fact!!)
