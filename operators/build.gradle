@@ -10,8 +10,6 @@ android {
 
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
     }
 
     compileOptions {
@@ -21,6 +19,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'otus.homework.flow'
 }
 
 dependencies {
