@@ -18,15 +18,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flow {
-            sampleRepository.produceNumbers()
-                .map { it * 5 }
-                .filter { it > 20 }
-                .filter { it % 2 != 0 }
-                .map { "$it won" }
-                .take(3)
-                .collect { emit(it) }
-        }
+        return sampleRepository.produceNumbers()
+            .map { it * 5 }
+            .filter { it > 20 }
+            .filter { it % 2 != 0 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -37,28 +34,12 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flow {
-            sampleRepository.produceNumbers().collect {
-                when {
-                    it % 15 == 0 -> {
-                        emit("$it")
-                        emit("FizzBuzz")
-                    }
-
-                    it % 5 == 0 -> {
-                        emit("$it")
-                        emit("Buzz")
-                    }
-
-                    it % 3 == 0 -> {
-                        emit("$it")
-                        emit("Fizz")
-                    }
-
-                    else -> {
-                        emit("$it")
-                    }
-                }
+        return sampleRepository.produceNumbers().transform {
+            emit("$it")
+            when {
+                it % 15 == 0 -> emit("FizzBuzz")
+                it % 5 == 0 -> emit("Buzz")
+                it % 3 == 0 -> emit("Fizz")
             }
         }
     }
@@ -82,18 +63,13 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flow {
-            sampleRepository.produceNumbers()
-                .catch {
-                    if (it is IllegalArgumentException) emit(-1)
-                    else throw it
-                }
-                .onCompletion {
-                    sampleRepository.completed()
-                }
-                .collect {
-                    emit(it)
-                }
-        }
+        return sampleRepository.produceNumbers()
+            .catch {
+                if (it is IllegalArgumentException) emit(-1)
+                else throw it
+            }
+            .onCompletion {
+                sampleRepository.completed()
+            }
     }
 }
