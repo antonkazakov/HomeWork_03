@@ -18,9 +18,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         lifecycleScope.launch {
-            catsViewModel.catsFlow.collect { fact ->
-                if (fact != null) {
-                    view.populate(fact)
+            catsViewModel.catsFlow.collect { result ->
+                when (result) {
+                    is Result.Loading -> {
+                        //TODO show loading progress
+                    }
+                    is Result.Success -> {
+                        view.populate(result.fact)
+                    }
+                    is Result.Error -> {
+                        //TODO show error message
+                    }
                 }
             }
         }
