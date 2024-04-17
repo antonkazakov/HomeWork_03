@@ -14,9 +14,15 @@ class CatsView @JvmOverloads constructor(
     override fun populate(fact: Fact) {
         findViewById<TextView>(R.id.fact_textView).text = fact.text
     }
+
+    override fun showError(thr: Throwable) {
+        findViewById<TextView>(R.id.error_textView).text = thr.message
+    }
 }
 
 interface ICatsView {
 
     fun populate(fact: Fact)
+
+    fun showError(thr: Throwable)
 }
