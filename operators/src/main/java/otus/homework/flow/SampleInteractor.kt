@@ -1,7 +1,14 @@
 package otus.homework.flow
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+
+fun main() {
+
+}
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -18,7 +25,11 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { it*5 }
+            .filter { it > 20 && it%2 != 0 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
