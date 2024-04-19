@@ -23,8 +23,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         scope.launch {
-            catsViewModel.catsLiveData.filterNotNull().collect {
-                view.populate(it)
+            catsViewModel.catsLiveData.filterNotNull().collect { result ->
+                when(result) {
+                    is Result.Success -> view.populate(result.fact)
+                    is Result.Error -> view.showError(result.message)
+                }
             }
         }
     }
