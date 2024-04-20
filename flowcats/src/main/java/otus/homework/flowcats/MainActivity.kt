@@ -9,17 +9,23 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var catsView: CatsView
+
     private val diContainer = DiContainer()
-    private val catsViewModel by viewModels<CatsViewModel> { CatsViewModelFactory(diContainer.repository) }
+    private val catsViewModel by viewModels<CatsViewModel> {
+        CatsViewModelFactory(diContainer.repository, ResultMapper())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
+        val view = layoutInflater.inflate(R.layout.activity_main, null)
         setContentView(view)
 
+        catsView = findViewById(R.id.fact_textView)
+
         lifecycleScope.launch {
-            catsViewModel.catsFlow.collect { fact ->
-                fact?.let { view.populate(it) }
+            catsViewModel.catsFlow.collect { result ->
+                result.show(catsView)
             }
         }
     }
