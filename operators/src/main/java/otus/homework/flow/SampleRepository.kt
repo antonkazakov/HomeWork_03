@@ -1,6 +1,7 @@
 package otus.homework.flow
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 interface SampleRepository {
 
