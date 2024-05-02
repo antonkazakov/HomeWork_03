@@ -18,7 +18,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { num -> num * 5 }
+            .filterNot { num -> num <= 20 }
+            .filter { num -> num % 2 != 0 }
+            .map { num -> "$num won" }
+            .take(3)
     }
 
     /**
