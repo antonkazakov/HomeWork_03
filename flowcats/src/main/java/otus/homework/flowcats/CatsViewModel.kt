@@ -9,13 +9,17 @@ import kotlinx.coroutines.launch
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
-    private val _cats = MutableStateFlow<Fact?>(null)
+    private val _cats = MutableStateFlow<Result<Fact?>>(Result.Success(null))
     val cats = _cats.asStateFlow()
 
     init {
         viewModelScope.launch {
-            catsRepository.listenForCatFacts().collect {
-                _cats.emit(it)
+            try {
+                catsRepository.listenForCatFacts().collect {
+                    _cats.emit(Result.Success(it))
+                }
+            } catch (e: Exception) {
+                _cats.emit(Result.Error("Error: $e"))
             }
         }
     }
