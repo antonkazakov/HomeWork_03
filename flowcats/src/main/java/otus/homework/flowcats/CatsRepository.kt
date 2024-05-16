@@ -11,13 +11,15 @@ class CatsRepository(
 ) {
     fun listenForCatFacts() = flow {
         while (true) {
-            try {
-                val latestNews = catsService.getCatFact()
-                emit(Result.Success(latestNews))
-                delay(refreshIntervalMs)
-            } catch (e: Exception) {
-                emit(Result.Error(e.message.toString()))
-            }
+            emit(catsService.getCatFact())
+            delay(refreshIntervalMs)
+//            try {
+//                val latestNews = catsService.getCatFact()
+//                emit(Result.Success(latestNews))
+//                delay(refreshIntervalMs)
+//            } catch (e: Exception) {
+//                emit(Result.Error(e.message.toString()))
+//            }
         }
     }
 
