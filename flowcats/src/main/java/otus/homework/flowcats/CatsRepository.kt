@@ -1,8 +1,10 @@
 package otus.homework.flowcats
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import otus.homework.flowcats.model.Result
 
 class CatsRepository(
@@ -20,5 +22,5 @@ class CatsRepository(
                 emit(Result.Error(e))
             }
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }

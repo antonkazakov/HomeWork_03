@@ -34,20 +34,17 @@ class SampleInteractor(
     fun task2(): Flow<String> {
         return sampleRepository.produceNumbers()
             .transform {
+                emit(it.toString())
                 when {
                     it % 15 == 0 -> {
-                        emit(it.toString())
                         emit("FizzBuzz")
                     }
                     it % 5 == 0 -> {
-                        emit(it.toString())
                         emit("Buzz")
                     }
                     it % 3 == 0 -> {
-                        emit(it.toString())
                         emit("Fizz")
                     }
-                    else -> emit(it.toString())
                 }
             }
     }
@@ -72,15 +69,12 @@ class SampleInteractor(
      */
     fun task4(): Flow<Int> {
         return sampleRepository.produceNumbers()
-            .transform { emit(it) }
-//            .catch { //todo(Не могу понять как правильно вызвать)
-//                dotsRepository.completed()
-//            }
             .catch {
                 when (it) {
                     is IllegalArgumentException -> emit(-1)
                     else -> throw it
                 }
             }
+            .onCompletion { sampleRepository.completed() }
     }
 }
