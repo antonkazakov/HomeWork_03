@@ -11,16 +11,25 @@ class CatsRepository(
     private val refreshIntervalMs: Long = 5000,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
+    private var errorCount = 0
 
     fun listenForCatFacts() = flow {
         while (true) {
-            val latestNews = try {
+            val result = try {
                 Result.Success<Fact>(body = catsService.getCatFact())
             } catch (e: Throwable) {
                 Result.Error
             }
-            emit(latestNews)
-            delay(refreshIntervalMs)
+            emit(result)
+
+            if (result == Result.Error) {
+                errorCount++
+                val errorDelay = errorCount * refreshIntervalMs
+                delay(errorDelay)
+            } else {
+                errorCount = 0
+                delay(refreshIntervalMs)
+            }
         }
     }.flowOn(ioDispatcher)
 }
