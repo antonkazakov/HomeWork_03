@@ -3,6 +3,7 @@ package otus.homework.flowcats
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 
 class CatsView @JvmOverloads constructor(
@@ -18,10 +19,22 @@ class CatsView @JvmOverloads constructor(
                 findViewById<TextView>(R.id.fact_textView).text = fact.text
             }
 
-            Result.Error -> Unit
+            Result.Error -> {
+                val errorMessage = context.getString(R.string.connection_error)
+                showToast(errorMessage)
+            }
+
             Result.Empty -> Unit
         }
 
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(
+            context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 }
 

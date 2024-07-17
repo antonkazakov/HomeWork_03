@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Flow cats</string>
+    <string name="connection_error">Connection Error</string>
 </resources>
