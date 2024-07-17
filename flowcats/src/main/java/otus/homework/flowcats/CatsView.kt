@@ -3,8 +3,9 @@ package otus.homework.flowcats
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 
 class CatsView @JvmOverloads constructor(
     context: Context,
@@ -21,7 +22,7 @@ class CatsView @JvmOverloads constructor(
 
             Result.Error -> {
                 val errorMessage = context.getString(R.string.connection_error)
-                showToast(errorMessage)
+                showSnack(errorMessage)
             }
 
             Result.Empty -> Unit
@@ -29,12 +30,8 @@ class CatsView @JvmOverloads constructor(
 
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(
-            context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+    private fun showSnack(message: String) {
+        Snackbar.make(this, message, BaseTransientBottomBar.LENGTH_LONG).show()
     }
 }
 
