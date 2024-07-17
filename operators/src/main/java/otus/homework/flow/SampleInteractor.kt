@@ -1,8 +1,10 @@
 package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
@@ -37,9 +39,28 @@ class SampleInteractor(
      * Если входное число делится на 15 - эмитим само число и после него эмитим строку FizzBuzz
      * Если число не делится на 3,5,15 - эмитим само число
      */
+    @OptIn(InternalCoroutinesApi::class)
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .flatMapConcat {
+                when {
+                    (it % 15 == 0) -> {
+                        flowOf("$it", "FizzBuzz")
+                    }
+
+                    (it % 5 == 0) -> {
+                        flowOf("$it", "Buzz")
+                    }
+
+                    (it % 3 == 0) -> {
+                        flowOf("$it", "Fizz")
+                    }
+
+                    else -> flowOf("$it")
+                }
+            }
     }
+
 
     /**
      * Реализуйте функцию task3, которая объединяет эмиты из двух flow и возвращает кортеж Pair<String,String>(f1,f2),
