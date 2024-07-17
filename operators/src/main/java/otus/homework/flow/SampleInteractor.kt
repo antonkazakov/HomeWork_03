@@ -1,7 +1,6 @@
 package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flatMapConcat
@@ -39,7 +38,6 @@ class SampleInteractor(
      * Если входное число делится на 15 - эмитим само число и после него эмитим строку FizzBuzz
      * Если число не делится на 3,5,15 - эмитим само число
      */
-    @OptIn(InternalCoroutinesApi::class)
     fun task2(): Flow<String> {
         return sampleRepository.produceNumbers()
             .flatMapConcat {
