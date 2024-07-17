@@ -13,7 +13,9 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private val diContainer = DiContainer()
-    private val catsViewModel by viewModels<CatsViewModel> { CatsViewModelFactory(diContainer.repository) }
+    private val catsViewModel by viewModels<CatsViewModel> {
+        CatsViewModelFactory(diContainer.repository)
+    }
     private var view: CatsView? = null
 
     @SuppressLint("InflateParams")
