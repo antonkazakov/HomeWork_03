@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        lifecycleScope.cancel()
         view = null
         super.onDestroy()
     }
