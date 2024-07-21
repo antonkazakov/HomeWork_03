@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.transform
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -38,7 +39,26 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .transform {
+                when {
+                    it % 15 == 0 -> {
+                        emit("$it")
+                        emit("FizzBuzz")
+                    }
+                    it % 3 == 0 -> {
+                        emit("$it")
+                        emit("Fizz")
+                    }
+                    it % 5 == 0 -> {
+                        emit("$it")
+                        emit("Buzz")
+                    }
+                    else -> {
+                        emit("$it")
+                    }
+                }
+            }
     }
 
     /**
