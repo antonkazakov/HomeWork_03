@@ -145,4 +145,43 @@ class SampleInteractorTest {
         }
         verify(exactly = 1) { dotsRepository.completed() }
     }
+
+    /**
+     * Previous task4() tests don't check the order of operations, therefore
+     * the following incorrect solution for task4() would pass the tests:
+     *
+     *     fun task4(): Flow<Int> {
+     *         return sampleRepository.produceNumbers()
+     *             .catch {
+     *                 if (it is IllegalArgumentException) {
+     *                     emit(-1)
+     *                 } else {
+     *                     throw it
+     *                 }
+     *             }
+     *             .also { sampleRepository.completed() }
+     *     }
+     *
+     *  ".also { sampleRepository.completed() }" will be called immediately
+     *  after the flow is created.
+     *
+     *  The next test checks the order of operations.
+     */
+    @Test
+    fun `test task4 completion order`() = runBlockingTest {
+        val orderOfExecution = mutableListOf<String>()
+
+        every { dotsRepository.produceNumbers() } returns flow {
+            orderOfExecution.add("emit")
+            emit(1)
+        }
+
+        every { dotsRepository.completed() } answers {
+            orderOfExecution.add("completed")
+        }
+
+        dotsInteractor.task4().toList()
+
+        assertEquals(listOf("emit", "completed"), orderOfExecution)
+    }
 }
