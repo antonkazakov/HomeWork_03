@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.zip
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -67,7 +68,9 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        val colors = sampleRepository.produceColors()
+        val forms = sampleRepository.produceForms()
+        return colors.zip(forms) { color, form -> color to form }
     }
 
     /**
