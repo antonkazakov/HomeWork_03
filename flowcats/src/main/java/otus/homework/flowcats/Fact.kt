@@ -21,4 +21,19 @@ data class Fact(
 	val user: String,
 	@field:SerializedName("updatedAt")
 	val updatedAt: String
-)
+) {
+
+	companion object {
+		fun getEmptyFact() = Fact(
+			createdAt = "",
+			deleted = false,
+			id = "",
+			text = "",
+			source = "",
+			used = false,
+			type = "",
+			user = "",
+			updatedAt = ""
+		)
+	}
+}

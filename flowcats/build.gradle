@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 34
     buildToolsVersion "30.0.3"
 
     namespace = "otus.homework.flowcats"
@@ -46,6 +46,10 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3'
     implementation 'androidx.activity:activity-ktx:1.2.3'
+    implementation 'androidx.test:monitor:1.7.1'
+    implementation 'androidx.test.ext:junit-ktx:1.2.1'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
+    androidTestImplementation 'junit:junit:4.12'
 }
