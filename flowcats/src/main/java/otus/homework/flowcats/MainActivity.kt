@@ -11,7 +11,8 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private val catsViewModel: CatsViewModel by viewModels()
+    private val diContainer = DiContainer()
+    private val catsViewModel by viewModels<CatsViewModel> { CatsViewModelFactory(diContainer.repository) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
                 catsViewModel.catsData.collect { result ->
                     when (result) {
                         is Success -> view?.populate(result.fact)
-                        is Error -> showException(exceptions = result.throwable)
+                        is Error -> showException(exceptions = result.message)
                         Initial -> {}
                     }
                 }
@@ -31,9 +32,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showException(exceptions: Throwable?) {
+    private fun showException(exceptions: String?) {
         val message = exceptions
-            ?.toString()
             ?.substringAfter(delimiter = this.getString(R.string.exception))
             .orEmpty()
 
