@@ -11,8 +11,8 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsFlow = MutableStateFlow<Fact?>(null)
-    val catsFlow: StateFlow<Fact?> = _catsFlow
+    private val _catsFlow = MutableStateFlow<Result>(Result.Init)
+    val catsFlow: StateFlow<Result> = _catsFlow
 
     init {
         viewModelScope.launch {
