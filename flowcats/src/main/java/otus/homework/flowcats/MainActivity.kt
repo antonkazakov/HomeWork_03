@@ -2,6 +2,7 @@ package otus.homework.flowcats
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.launchIn
@@ -17,8 +18,12 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.activity_main, null) as CatsView
         setContentView(view)
 
-        catsViewModel.catsFlow.onEach { fact ->
-            fact?.let { view.populate(it) }
+        catsViewModel.catsFlow.onEach { result ->
+            when(result){
+                Result.Init -> Unit
+                is Result.Error -> Toast.makeText(this, result.msgError, Toast.LENGTH_SHORT).show()
+                is Result.Success -> view.populate(result.fact)
+            }
         }.launchIn(lifecycleScope)
     }
 }
