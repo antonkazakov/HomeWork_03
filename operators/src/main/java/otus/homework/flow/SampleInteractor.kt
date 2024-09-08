@@ -18,7 +18,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { it * 5 }
+            .filter { it > 20 }
+            .filter { it % 2 == 1 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -29,7 +34,15 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .transform { request ->
+                emit(request.toString())
+                when {
+                    request % 15 == 0 -> emit("FizzBuzz")
+                    request % 5 == 0 -> emit("Buzz")
+                    request % 3 == 0 -> emit("Fizz")
+                }
+            }
     }
 
     /**
@@ -38,16 +51,24 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceColors()
+            .zip(sampleRepository.produceForms()) { color, form ->
+                Pair(color, form)
+            }
     }
 
     /**
      * Реализайте функцию task4, которая обрабатывает IllegalArgumentException и в качестве фоллбека
      * эмитит число -1.
      * Если тип эксепшена != IllegalArgumentException, пробросьте его дальше
-     * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
+     * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод sampleRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .catch { ex ->
+                if (ex is IllegalArgumentException) emit(-1)
+                else throw ex
+            }
+            .onCompletion { sampleRepository.completed() }
     }
 }
