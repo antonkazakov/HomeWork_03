@@ -20,18 +20,14 @@ class CatsViewModel(
 //    val catsLiveData: LiveData<Fact> = _catsLiveData
 
     init {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
 //                catsRepository.listenForCatFacts().collect {
 //                    withContext(Dispatchers.Main) { // fix
 //                        _catsLiveData.value = it
 //                    }
 //                }
-                catsRepository.listenForCatFacts().collect {
-                        withContext(Dispatchers.Main) {
-                            _catsFlowData.emit(it)
-                        }
-                    }
+            catsRepository.listenForCatFacts().collect {
+                _catsFlowData.emit(it)
             }
         }
     }
