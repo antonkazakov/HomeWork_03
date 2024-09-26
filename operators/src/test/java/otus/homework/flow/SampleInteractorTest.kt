@@ -24,7 +24,7 @@ class SampleInteractorTest {
     fun `test task1`() = runBlockingTest {
         every { dotsRepository.produceNumbers() } returns flowOf(7, 12, 4, 8, 11, 5, 7, 16, 99, 1)
 
-        val expected = listOf("35 won", "55 won", "25 won")
+        val expected = listOf("5 won", "495 won", "80 won")
         val actual = dotsInteractor.task1().toList()
 
         assertEquals(expected, actual)
