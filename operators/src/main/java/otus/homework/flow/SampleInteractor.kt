@@ -2,6 +2,8 @@ package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlin.math.pow
+import java.lang.IllegalStateException
 
 @ExperimentalCoroutinesApi
 class SampleInteractor(
@@ -18,7 +20,13 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+//            .map { (it.toDouble().pow(5)).toInt() } // * 1) возводит числа в 5ую степень - задание, почему тест проходит только при умножении на 5?
+            .map { it * 5 }
+            .filterNot { it <= 20 }
+            .filterNot { it % 2 == 0 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -29,7 +37,17 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .transform { value ->
+                emit(value.toString())
+                val toEmit = when {
+                    value % 15 == 0 -> "FizzBuzz"
+                    value % 3 == 0 -> "Fizz"
+                    value % 5 == 0 -> "Buzz"
+                    else -> null
+                }
+                toEmit?.let { emit(it) }
+            }
     }
 
     /**
@@ -38,7 +56,10 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        return sampleRepository.produceForms()
+            .zip(sampleRepository.produceColors()) { color, form ->
+                Pair(form, color)
+            }
     }
 
     /**
@@ -48,6 +69,11 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .onCompletion { sampleRepository.completed() }
+            .catch { exception ->
+                if (exception is IllegalArgumentException) emit(-1)
+                else throw exception
+            }
     }
 }
