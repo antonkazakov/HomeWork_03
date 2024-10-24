@@ -1,31 +1,45 @@
 package otus.homework.flowcats
 
 import androidx.lifecycle.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.lifecycle.viewmodel.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableLiveData<Fact>()
-    val catsLiveData: LiveData<Fact> = _catsLiveData
+    companion object {
+
+        val CATS_REPO = object : CreationExtras.Key<CatsRepository> {}
+
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val catsRepository = this[CATS_REPO] as CatsRepository
+                CatsViewModel(
+                    catsRepository = catsRepository
+                )
+            }
+        }
+    }
+
+    private val _catsFlow = MutableStateFlow<Fact?>(null)
+    val catsFlow: StateFlow<Fact?> = _catsFlow
+
+    private val _eventErrorMessage = MutableSharedFlow<String?>()
+    val eventErrorMessage = _eventErrorMessage.asSharedFlow()
 
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.value = it
+                catsRepository.listenForCatFacts().collect { result ->
+                    when (result) {
+                        is NetworkResult.Error -> _eventErrorMessage.emit(result.error?.string())
+                        is NetworkResult.Exception -> _eventErrorMessage.emit(result.e.message)
+                        is NetworkResult.Success -> _catsFlow.value = result.data
+                    }
                 }
             }
         }
     }
-}
-
-class CatsViewModelFactory(private val catsRepository: CatsRepository) :
-    ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-        CatsViewModel(catsRepository) as T
 }
