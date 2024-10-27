@@ -1,6 +1,10 @@
 package otus.homework.flowcats
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -17,7 +21,7 @@ class CatsViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.value = it
+                    _catsLiveData.postValue(it)
                 }
             }
         }
@@ -26,6 +30,6 @@ class CatsViewModel(
 
 class CatsViewModelFactory(private val catsRepository: CatsRepository) :
     ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-        CatsViewModel(catsRepository) as T
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T & Any =
+        CatsViewModel(catsRepository) as (T & Any)
 }
