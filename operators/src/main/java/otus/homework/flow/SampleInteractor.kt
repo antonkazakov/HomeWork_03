@@ -4,7 +4,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
@@ -43,23 +42,19 @@ class SampleInteractor(
     fun task2(): Flow<String> =
         sampleRepository.produceNumbers().flatMapConcat {
             flow {
+                emit("$it")
                 when {
                     (it % 3 == 0 && it % 5 == 0) -> {
-                        emit("$it")
                         emit("FizzBuzz")
                     }
 
                     (it % 3 == 0) -> {
-                        emit("$it")
                         emit("Fizz")
                     }
 
                     (it % 5 == 0) -> {
-                        emit("$it")
                         emit("Buzz")
                     }
-
-                    else -> emit("$it")
                 }
             }
         }
@@ -85,7 +80,7 @@ class SampleInteractor(
      */
     fun task4(): Flow<Int> =
         sampleRepository.produceNumbers().catch {
-            when(it){
+            when (it) {
                 is IllegalArgumentException -> emit(-1)
                 else -> throw it
             }
