@@ -3,13 +3,11 @@ package otus.homework.flowcats
 import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CatsViewModel(
     private val catsRepository: CatsRepository
@@ -26,10 +24,8 @@ class CatsViewModel(
             _catsFlow.value = Result.Error(error.message.toString())
 
         }) {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect {fact ->
+                catsRepository.listenForCatFacts().collect { fact ->
                     _catsFlow.value = Result.Success(fact)
-                }
             }
         }
     }
