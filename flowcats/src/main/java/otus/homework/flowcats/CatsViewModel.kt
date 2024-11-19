@@ -31,15 +31,15 @@ class CatsViewModel(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                catsRepository.listenForCatFacts().collect { result ->
+            catsRepository.listenForCatFacts()
+                .flowOn(Dispatchers.IO)
+                .collect { result ->
                     when (result) {
                         is NetworkResult.Error -> _eventErrorMessage.emit(result.error?.string())
                         is NetworkResult.Exception -> _eventErrorMessage.emit(result.e.message)
                         is NetworkResult.Success -> _catsFlow.value = result.data
                     }
                 }
-            }
         }
     }
 }
