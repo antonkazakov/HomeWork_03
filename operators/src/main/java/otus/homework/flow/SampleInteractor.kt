@@ -58,17 +58,9 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        var last1 : String = ""
-        var last2 : String = ""
         val f1 = sampleRepository.produceColors()
         val f2 = sampleRepository.produceForms()
-        return combineTransform(f1, f2) { s1, s2 ->
-            if ((s1 != last1) and (s2 != last2)) {
-                last1 = s1
-                last2 = s2
-                emit(Pair(s1, s2))
-            }
-        }
+        return f1.zip(f2) { s1, s2 -> Pair(s1, s2) }
     }
 
     /**
@@ -85,8 +77,11 @@ class SampleInteractor(
                 }
             }
             catch (e: Throwable) {
-                 if (e !is IllegalArgumentException) throw e
                 emit(-1)
+                if (e !is IllegalArgumentException) {
+                    sampleRepository.completed()
+                    throw e
+                }
             }
             sampleRepository.completed()
         }
