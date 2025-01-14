@@ -27,11 +27,9 @@ class CatsViewModel(
     val contentState = _contentState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+        viewModelScope.launch (Dispatchers.IO){
                 catsRepository.listenForCatFacts().collect {
                     _contentState.value = it
-                }
             }
         }
     }
