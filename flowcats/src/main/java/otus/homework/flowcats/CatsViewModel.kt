@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
-    private val _cats = MutableStateFlow<Result<Fact?>>(Result.Success(null))
+    private val _cats = MutableStateFlow<Result<Fact>?>(null)
     val cats = _cats.asStateFlow()
 
     init {
@@ -25,8 +25,9 @@ class CatsViewModel(
     }
 }
 
-class CatsViewModelFactory(private val catsRepository: CatsRepository) :
-    ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+class CatsViewModelFactory(
+    private val catsRepository: CatsRepository
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
         CatsViewModel(catsRepository) as T
 }

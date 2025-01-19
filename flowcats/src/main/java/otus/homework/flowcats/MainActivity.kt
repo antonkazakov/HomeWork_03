@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.collect
 
 class MainActivity : AppCompatActivity() {
     private val diContainer = DiContainer()
-    private val catsViewModel by viewModels<CatsViewModel> { CatsViewModelFactory(diContainer.repository) }
+    private val catsViewModel by viewModels<CatsViewModel> {
+        CatsViewModelFactory(diContainer.repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,9 +20,11 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launchWhenStarted {
             catsViewModel.cats.collect { fact ->
+                if (fact == null) return@collect
+
                 when (fact) {
                     is Result.Success -> {
-                        fact.data?.let { view.populate(it) }
+                        view.populate(fact.data)
                     }
                     is Result.Error -> {
                         Toast.makeText(this@MainActivity, fact.message, Toast.LENGTH_SHORT).show()
