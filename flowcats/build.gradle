@@ -4,8 +4,9 @@ plugins {
 }
 
 android {
+    namespace = "otus.homework.flowcats"
+
     compileSdkVersion 30
-    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "otus.homework.flowcats"
@@ -30,6 +31,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'otus.homework.flowcats'
 }
 
 dependencies {

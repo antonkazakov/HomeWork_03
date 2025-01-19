@@ -4,14 +4,13 @@ plugins {
 }
 
 android {
-    compileSdk 34
-    buildToolsVersion "30.0.3"
+    namespace = "otus.homework.operators"
+
+    compileSdkVersion 34
     defaultConfig {
 
         minSdkVersion 23
         targetSdkVersion 33
-        versionCode 1
-        versionName "1.0"
     }
 
     compileOptions {
@@ -24,6 +23,7 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.test.ext:junit-ktx:1.1.5'
     testImplementation "io.mockk:mockk:1.11.0"
     testImplementation 'junit:junit:4.13.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
