@@ -1,9 +1,11 @@
 package otus.homework.flowcats
 
 import MyResult
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 class CatsRepository(
     private val catsService: CatsService,
@@ -20,5 +22,5 @@ class CatsRepository(
             emit(factCat)
             delay(refreshIntervalMs)
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }
