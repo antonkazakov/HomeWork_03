@@ -1,6 +1,7 @@
 package otus.homework.flow
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 
 @ExperimentalCoroutinesApi
@@ -18,7 +19,12 @@ class SampleInteractor(
      * 6) возвращает результат
      */
     fun task1(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .map { it * 5 }
+            .filter { it > 20 }
+            .filter { it % 2 != 0 }
+            .map { "$it won" }
+            .take(3)
     }
 
     /**
@@ -29,7 +35,15 @@ class SampleInteractor(
      * Если число не делится на 3,5,15 - эмитим само число
      */
     fun task2(): Flow<String> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .flatMapConcat {
+                when {
+                    it % 15 == 0 -> flowOf(it.toString(), "FizzBuzz")
+                    it % 3 == 0 -> flowOf(it.toString(), "Fizz")
+                    it % 5 == 0 -> flowOf(it.toString(), "Buzz")
+                    else -> flowOf(it.toString())
+                }
+            }
     }
 
     /**
@@ -38,7 +52,12 @@ class SampleInteractor(
      * Если айтемы в одно из флоу кончились то результирующий флоу также должен закончится
      */
     fun task3(): Flow<Pair<String, String>> {
-        return flowOf()
+        val flow1 = sampleRepository.produceColors()
+        val flow2 = sampleRepository.produceForms()
+
+        return flow1.zip(flow2) { first, second ->
+            Pair(first, second)
+        }
     }
 
     /**
@@ -48,6 +67,14 @@ class SampleInteractor(
      * При любом исходе, будь то выброс исключения или успешная отработка функции вызовите метод dotsRepository.completed()
      */
     fun task4(): Flow<Int> {
-        return flowOf()
+        return sampleRepository.produceNumbers()
+            .catch { e ->
+                if (e is IllegalArgumentException) {
+                    println(e.toString())
+                    emit(-1)
+                } else {
+                    throw e
+                }
+            }.onCompletion { sampleRepository.completed() }
     }
 }
