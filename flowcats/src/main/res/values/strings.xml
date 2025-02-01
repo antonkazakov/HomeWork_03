@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Flow cats</string>
+    <string name="could_not_get_response_from_server">Не удалось получить ответ от сервера</string>
 </resources>
