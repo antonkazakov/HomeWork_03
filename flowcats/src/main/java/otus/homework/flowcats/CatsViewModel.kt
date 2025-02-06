@@ -2,6 +2,9 @@ package otus.homework.flowcats
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -10,14 +13,15 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _catsLiveData = MutableLiveData<Fact>()
-    val catsLiveData: LiveData<Fact> = _catsLiveData
+    private val _catsState: MutableStateFlow<Result> = MutableStateFlow(Result.Success(Fact("", 0)))
+
+    val catsState: StateFlow<Result> = _catsState
 
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 catsRepository.listenForCatFacts().collect {
-                    _catsLiveData.value = it
+                    _catsState.value = it
                 }
             }
         }
@@ -26,6 +30,13 @@ class CatsViewModel(
 
 class CatsViewModelFactory(private val catsRepository: CatsRepository) :
     ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-        CatsViewModel(catsRepository) as T
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(CatsViewModel::class.java)) {
+            return CatsViewModel(catsRepository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
+
+    }
 }
